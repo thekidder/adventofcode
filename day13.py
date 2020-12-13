@@ -1,22 +1,21 @@
 def part1(t, busses):
   print('PART 1')
   bus = 0
-  minb = 10000000
+  minb = None
 
-  busses = busses.split(',')
-  busses = list(filter(lambda b: b != 'x', busses))
-  busses = [int(b) for b in busses]
+  busses = [int(b) for b in busses.split(',') if b != 'x']
   for b in busses:
     i = 0
     while True:
       if (t + i) % b == 0:
-        if t + i < minb:
+        if minb is None or t + i < minb:
           minb = t + i
           bus = b
         break
       i += 1
 
   print((minb - t) * bus)
+
 
 def part2(line):
   print('PART 2')
@@ -29,6 +28,7 @@ def part2(line):
     offsets[int(busses[i])] = i
 
   t = 0
+  i = 0
   while True:
     if valid(t, offsets):
       print(f'found {t} after {i} iterations')
@@ -39,7 +39,6 @@ def part2(line):
       if (t + offset) % bus == 0:
         lcm *= bus
     t += lcm
-
     i += 1
 
 
@@ -48,6 +47,7 @@ def valid(t, offsets):
     if (t + offset) % bus != 0:
       return False
   return True
+
 
 with open('day13.txt', 'r') as f:
   t = int(f.readline())
