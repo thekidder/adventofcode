@@ -18,16 +18,11 @@ def run(filename):
         for i in range(len(mask)):
           bit = mask[-i - 1]
           if bit == '1':
-            # print(f'1 bit at {i}')
             onesmask += 1 << i
           if bit != 'X':
-            # print(f'0 bit at {i}')
             notxmask += 1 << i
           else:
             xmask.append(i)
-
-        # print(onesmask)
-        # print(zerosmask)
       else:
         m = re.match('mem\[(\d+)\] \= (\d+)', line)
         g = m.groups()
@@ -36,20 +31,12 @@ def run(filename):
 
         maskaddr = (addr | onesmask) & notxmask
         all_addr(mem, val, maskaddr, xmask)
-        # for i in range(68719476735):
-        #   if (i & notxmask) == (maskaddr & notxmask):
-        #     mem[i] = val
-        
-
-        # mem[addr] = (val | onesmask) ^ (val & zerosmask)
-        # print(addr, mem[addr])
 
   s = 0
   for addr, val in mem.items():
     s += val
   print(mem)
   print(s)
-  # NOT 9889493670975
 
 def all_addr(mem, val, base, bits):
   if len(bits) == 0:
