@@ -8,34 +8,34 @@ def run(filename):
     turns = {}
     for i in range(len(nums)):
       n = nums[i]
-      turns[n] = [i]
+      turns[n] = [i, 0]
     print(turns)
 
     last = nums[-1]
     num = 0
 
     for i in range(len(nums), 30000000):
-      if len(turns[last]) > 1:
+      if turns[last][1] > 0:
         # print(turns[last])
-        num = turns[last][-1] - turns[last][-2]
+        num = turns[last][1]
         if num in turns:
-          turns[num].append(i)
+          last_turn = turns[num][0]
+          turns[num][0] = i
+          turns[num][1] = i - last_turn
         else:
-          turns[num] = [i]
+          turns[num] = [i, 0]
       else:
         num = 0
-        turns[0].append(i)
-      # print(num)
-      if len(turns[num]) > 2:
-        turns[num] = turns[num][-2:]
+        last_turn = turns[num][0]
+        turns[num][0] = i
+        turns[num][1] = i - last_turn
 
       last = num
-      if i % 100000 == 0:
+      if i % 1000000 == 0:
         print(i)
-      if i == 30000000 - 1:
-        print(num)
+    print(num)
 
 
 
 # run('day15_ex.txt')
-run('day15.txt')
+run('day15.txt') # 1876406
