@@ -27,12 +27,17 @@ def run(filename):
         if allergen in allergens:
           if allergen == 'soy':
             print(f'before {allergens[allergen]}')
-          allergens[allergen] = allergens[allergen] & item_ingredients
+          allergens[allergen] &= item_ingredients
           if allergen == 'soy':
             print(f'after {allergens[allergen]}')
         else:
           print(f'set {allergen} to {item_ingredients}')
-          allergens[allergen] = item_ingredients
+          allergens[allergen] = set(item_ingredients)
+      if 'soy' in item_allergens:
+        print(f'after loop {allergens["soy"]}')
+
+    print(f'after for {allergens["soy"]}')
+
 
   print(allergens['soy'])
   # print(ingredients)
@@ -48,5 +53,27 @@ def run(filename):
   print(cnt)
 
 
-run('day21_ex.txt')
-# run('day21.txt')
+  done = False
+
+  while not done:
+    done = True
+    for name, a in allergens.items():
+      if len(a) == 1:
+        for nameb, b in allergens.items():
+          if name == nameb:
+            continue
+          b -= a
+      else:
+        done = False
+
+  danger = []
+  for allergen in sorted(allergens.keys()):
+    ingredient = list(allergens[allergen])[0]
+    danger.append(ingredient)
+
+  print(allergens)
+  print(','.join(danger))
+
+
+# run('day21_ex.txt')
+run('day21.txt')
