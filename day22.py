@@ -1,13 +1,28 @@
+import functools
+
 def roundhash(game):
   return ','.join(map(str, game[0])) + ':' + ','.join(map(str, game[1]))
 
-def endround(game, c0, c1):
-  if c0 > c1:
-    game[0].append(c0)
-    game[0].append(c1)
-  else:
-    game[1].append(c1)
-    game[1].append(c0)
+def winnerof(cards):
+  if cards[0] > cards[1]:
+    return 0
+  return 1
+
+def endround(game, winner, cards):
+  if winner == 1:
+    cards = reversed(cards)
+  game[winner].extend(cards)
+
+def scoreof(game):
+  def playerscore(p):
+    score = 0
+    for i, c in enumerate(reversed(p)):
+      score += (i + 1) * c
+    return score
+  return functools.reduce(lambda a, p: a + playerscore(p), game, 0)
+
+def draw(game):
+  return [x.pop(0) for x in game]
 
 def part2_game(game):
   print(f'START GAME: {game}')
@@ -18,29 +33,17 @@ def part2_game(game):
     if state in prevrounds:
       return 0
     prevrounds.add(state)
-    c0 = game[0].pop(0)
-    c1 = game[1].pop(0)
-    if c0 <= len(game[0]) and c1 <= len(game[1]):
-      winner = part2_game([game[0][:c0], game[1][:c1]])
-      if winner == 0:
-        game[0].append(c0)
-        game[0].append(c1)
-      else:
-        game[1].append(c1)
-        game[1].append(c0)
+    cards = draw(game)
+    if len(game[0]) >= cards[0] and len(game[1]) >= cards[1]:
+      winner = part2_game([game[0][:cards[0]], game[1][:cards[1]]])
+      endround(game, winner, cards)
     else:
-      endround(game, c0, c1)
+      endround(game, winnerof(cards), cards)
 
-  winner = 0
-  if len(game[1]) > 0:
-    winner = 1
-
-  score = 0
-  for i, c in enumerate(reversed(game[winner])):
-    score += (i + 1) * c
-  print(f'SCORE: {score}')
-  return winner
-
+  print(f'SCORE: {scoreof(game)}')
+  if len(game[0]) > 0:
+    return 0
+  return 1
 
 def run(filename):
   with open(filename, 'r') as f:
@@ -59,21 +62,9 @@ def run(filename):
       part2.append(cards[:])
 
     while len(part1[0]) > 0 and len(part1[1]) > 0:
-      c0 = part1[0].pop(0)
-      c1 = part1[1].pop(0)
-
-      endround(part1, c0, c1)
-
-      print(part1)
-
-    winner = 0
-    if len(part1[1]) > 0:
-      winner = 1
-
-    score = 0
-    for i, c in enumerate(reversed(part1[winner])):
-      score += (i + 1) * c
-    print(score)
+      cards = draw(part1)
+      endround(part1, winnerof(cards), cards)
+    print(scoreof(part1))
 
     part2_game(part2)
 
