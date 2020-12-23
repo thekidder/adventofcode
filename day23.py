@@ -1,8 +1,5 @@
 debug = False
 
-def rotate(l, n):
-  return l[n:] + l[:n]
-
 def run(input):
   cups = [int(c) for c in input]
   min_cup = 1
