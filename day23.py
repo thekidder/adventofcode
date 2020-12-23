@@ -1,4 +1,4 @@
-debug = True
+debug = False
 
 def rotate(l, n):
   return l[n:] + l[:n]
@@ -9,13 +9,37 @@ def run(input):
   max_cup = max(cups)
 
   cups.extend(range(max_cup+1, 1000001))
-  # debug and print(cups)
+  max_cup = max(cups)
+  debug and print(len(cups))
 
-  pos = 0
+  cup_map = {}
 
-  for i in range(1000):
-    cur = cups[pos]
-    picked_up = [cups[i%len(cups)] for i in range(pos+1, pos+4)]
+  for i in range(len(cups)):
+    cup = cups[i]
+    prev_cup = None
+    prev_cup = cups[i-1]
+    next_cup = None
+    if i < len(cups) - 1:
+      next_cup = cups[i+1]
+    else:
+      next_cup = cups[0]
+    cup_map[cup] = [prev_cup, next_cup]
+  debug and print(cup_map)
+
+  cur = cups[0]
+
+  for i in range(10000000):
+    debug and print(f'{i} BEGIN ({cur}): {cup_map}')
+    # picked_up = [cups.pop(1) for i in range(3)]
+    n = cup_map[cur][1]
+
+    picked_up = []
+    for j in range(3):
+      picked_up.append(n)
+      n = cup_map[n][1]
+    cup_map[cur][1] = n
+    cup_map[n][0] = cur
+
     debug and print(f'{i} CUR: {cur} PICKED UP: {picked_up}')
     dest = cur - 1
     while dest in picked_up or dest < min_cup:
@@ -23,32 +47,32 @@ def run(input):
       if dest < min_cup:
         dest = max_cup
 
-    debug and print(f'DEST {dest}')
-    dest_pos = pos
-    cnt = 0
-    while cups[dest_pos] != dest:
-      dest_pos = (dest_pos + 1) % len(cups)
-      cups[dest_pos] = cups[(dest_pos + 3) % len(cups)]
-      if pos == dest_pos + 3:
-        pos = (pos - 3) % len(cups)
-      cnt += 1
+    dest_n = cup_map[dest][1]
 
-    for j in range(3):
-      cups[(dest_pos+1+j)%len(cups)] = picked_up[j]
+    for p in picked_up:
+      cup_map[dest][1] = p
+      cup_map[p][0] = dest
+      dest = p
 
-    pos = (pos + 1) % len(cups)
+    cup_map[dest][1] = dest_n
 
-    debug and print(f'{i} STEP COMPLETE: cups[{pos}] = {cups[pos]} {cnt}')
+    cur = n
 
-    if (i+1) % 10 == 0:
+    debug and print(f'{i} Next current - {cur}')
+
+    if (i+1) % 100000 == 0:
       print(f'iteration {i+1}')
 
-  one_cup = cups.index(1)
-  cups = rotate(cups, one_cup)
-  debug and print(''.join([str(c) for c in cups[1:]]))
-  print(cups[1])
-  print(cups[2])
+  el = 1
+  if debug:
+    for i in range(len(cups)-1):
+      print(f'{cup_map[el][1]}', end='')
+      el = cup_map[el][1]
+    print()
+  num = cup_map[1][1]
+  debug and print(cup_map)
+  print(num, cup_map[num][1], cup_map[num][1] * num)
 
 
-run('389125467') # example
-# run('643719258') # problem
+# run('389125467') # example
+run('643719258') # problem
