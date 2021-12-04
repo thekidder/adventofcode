@@ -20,23 +20,6 @@ def has_bingo(board):
                 bingo = False
         if bingo:
             return True
-    # diag 1
-    for row in range(BOARD_SIZE):
-        bingo = True
-        for col in range(BOARD_SIZE):
-            if board[row][col] != None:
-                bingo = False
-        if bingo:
-            return True
-
-    # diag 2
-    for row in range(BOARD_SIZE):
-        bingo = True
-        for col in range(BOARD_SIZE):
-            if board[BOARD_SIZE-row-1][col] != None:
-                bingo = False
-        if bingo:
-            return True
 
 def mark(board, num):
     for row in range(BOARD_SIZE):
