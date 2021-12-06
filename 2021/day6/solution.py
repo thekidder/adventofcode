@@ -1,13 +1,4 @@
-from collections import defaultdict, Counter
-
-import re
-import math
-import sys
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
+from collections import Counter
 
 def parse_file(filename):
     with open(filename, 'r') as f:
@@ -37,12 +28,6 @@ def part1(filename):
     print(f'ANSWER: {len(fishes)}')
 
 
-def total(counter):
-    cnt = 0
-    for val in counter.values():
-        cnt += val
-    return cnt
-
 def part2(filename):
     fishes = parse_file(filename)
     fishes = Counter(fishes)
@@ -52,9 +37,8 @@ def part2(filename):
     day = 0
     while days > 0:
         next_fishes = Counter()
-        for i in range(9, -1, -1):
+        for i in fishes.keys():
             num_fishes_of_day = fishes[i]
-            print(f'got {num_fishes_of_day} at {i}')
             if i == 0:
                 next_fishes[6] += num_fishes_of_day
                 next_fishes[8] += num_fishes_of_day
@@ -64,12 +48,8 @@ def part2(filename):
         fishes = next_fishes
                 
         day += 1
-        print(fishes)
-        print(f'After {day} days: {total(fishes)}')
-
         days -= 1
-    ans = 0
-    print(f'ANSWER: {len(fishes)}')
+        print(f'After {day} days: {fishes.total()}')
 
 
 part2('input.txt')
