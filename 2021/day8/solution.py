@@ -47,11 +47,6 @@ def collapse(m, segments, possibilities):
     possibilities = set(possibilities)
     for segment in segments:
         m[segment] &= possibilities
-    # for segment in all_segments:
-    #     if segment not in segments:
-    #         m[segment] -= possibilities
-
-    print(m)
 
     clean(m)
 
@@ -62,10 +57,8 @@ def clean(m):
         for segment in all_segments:
             if len(m[segment]) == 1:
                 eliminated = next(iter(m[segment]))
-                # print(f'{eliminated} has been eliminated')
                 for o in all_segments:
                     if o != segment and eliminated in m[o]:
-                        # print(f'{o} cannot be {eliminated}')
                         m[o].remove(eliminated)
                         diff = True
 
@@ -127,10 +120,8 @@ def part2(filename):
 
         for s in all_segments:
             if five_cnt[s] == 2:
-                print(f'{s} appears twice in the fives')
                 collapse(segment_map, s, 'cf')
             if five_cnt[s] == 1:
-                print(f'{s} appears once in the fives')
                 collapse(segment_map, s, 'eb')
 
         for x in sixes:
@@ -139,7 +130,6 @@ def part2(filename):
 
         for s in all_segments:
             if six_cnt[s] == 2:
-                print(f'{s} appears twice in the sixes')
                 collapse(segment_map, s, 'cde')
 
 
