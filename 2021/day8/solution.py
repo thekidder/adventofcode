@@ -1,13 +1,6 @@
 from collections import defaultdict, Counter
 
-import re
-import math
-import sys
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
+import functools
 
 def parse_file(filename):
     patterns = []
@@ -43,14 +36,14 @@ def make_map():
     return segment_map
 
 
-def collapse(m, segments, possibilities):
+def observe(m, segments, possibilities):
     possibilities = set(possibilities)
     for segment in segments:
         m[segment] &= possibilities
 
-    clean(m)
+    collapse(m)
 
-def clean(m):
+def collapse(m):
     diff = True
     while diff:
         diff = False
@@ -63,14 +56,15 @@ def clean(m):
                         diff = True
 
 
-def decode(map, digit):
+def map_digit(map, digit):
     mapped = ''
-    print(digit)
     for c in digit:
-        print(f'{c} -> {next(iter(map[c]))}')
         mapped += next(iter(map[c]))
-    print(mapped)
+    return mapped
 
+
+def decode(map, digit):
+    mapped = map_digit(map, digit)
     digits = {
         'abcefg': 0,
         'cf': 1,
@@ -84,56 +78,50 @@ def decode(map, digit):
         'abcdfg': 9,
     }
     for c in digits:
-        print(f'{digit} {c}')
         if set(mapped) == set(c):
             return digits[c]
+
+
+def count_segments(patterns):
+    cnt = Counter()
+    for pattern in patterns:
+        cnt.update(pattern)
+    return cnt
+
 
 def part2(filename):
     patterns,outputs = parse_file(filename)
     ans = 0
-    for i in range(len(patterns)):
-        print('LINE')
-        ps = patterns[i]
-        digits = outputs[i]
-
+    for ps,digits in zip(patterns,outputs):
         segment_map = make_map()
 
-        fives = []
-        sixes = []
-        for p in ps:
-            if len(p) == 2:
-                collapse(segment_map, p, 'cf')
-            if len(p) == 3:
-                collapse(segment_map, p, 'acf')
-            if len(p) == 4:
-                collapse(segment_map, p, 'bcdf')
-            if len(p) == 5:
-                fives.append(p)
-            if len(p) == 6:
-                sixes.append(p)
-        five_cnt = defaultdict(int)
-        six_cnt = defaultdict(int)
-        print(fives)
-        for x in fives:
-            for c in x:
-                five_cnt[c] += 1
+        patterns_by_len = defaultdict(list)
+        for pattern in ps:
+            patterns_by_len[len(pattern)].append(pattern)
 
-        for s in all_segments:
-            if five_cnt[s] == 2:
-                collapse(segment_map, s, 'cf')
-            if five_cnt[s] == 1:
-                collapse(segment_map, s, 'eb')
+        for pattern_len, p in patterns_by_len.items():
+            if pattern_len == 2:
+                for pattern in p:
+                    observe(segment_map, pattern, 'cf')
+            elif pattern_len == 3:
+                for pattern in p:
+                    observe(segment_map, pattern, 'acf')
+            elif pattern_len == 4:
+                for pattern in p:
+                    observe(segment_map, pattern, 'bcdf')
+            elif pattern_len == 5:
+                segment_cnt = count_segments(p)
+                for segment, cnt in segment_cnt.items():
+                    if cnt == 1:
+                        observe(segment_map, segment, 'eb')
+                    elif cnt == 2:
+                        observe(segment_map, segment, 'cf')
+            elif pattern_len == 6:
+                segment_cnt = count_segments(p)
+                for segment, cnt in segment_cnt.items():
+                    if cnt == 2:
+                        observe(segment_map, segment, 'cde')
 
-        for x in sixes:
-            for c in x:
-                six_cnt[c] += 1
-
-        for s in all_segments:
-            if six_cnt[s] == 2:
-                collapse(segment_map, s, 'cde')
-
-
-        print(segment_map)
         a = ''
         for o in digits:
             i = str(decode(segment_map, o))
@@ -141,9 +129,7 @@ def part2(filename):
         a = int(a)
         ans += a
 
-
-
     print(f'ANSWER: {ans}')
 
 
-part2('input.txt')
+part2('example.txt')
