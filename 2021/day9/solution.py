@@ -1,14 +1,4 @@
-from collections import defaultdict, Counter
-
 import functools
-import math
-import re
-import sys
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
 
 def parse_file(filename):
     lines = []
@@ -19,18 +9,8 @@ def parse_file(filename):
     return lines
 
 
-def neighbors(lines, x, y):
-    if x > 0:
-        yield lines[y][x-1]
-    if x < len(lines[0]) - 1:
-        yield lines[y][x+1]
-    if y > 0:
-        yield lines[y-1][x]
-    if y < len(lines) - 1:
-        yield lines[y+1][x]
-
-
-def neighbors_pos(lines, x, y):
+def neighbors(lines, pos):
+    x,y = pos
     if x > 0:
         yield (x-1,y)
     if x < len(lines[0]) - 1:
@@ -41,24 +21,23 @@ def neighbors_pos(lines, x, y):
         yield (x,y+1)
 
 
-def flood(lines, x, y):
+def get_val(lines, pos):
+    return lines[pos[1]][pos[0]]
+
+
+def flood(lines, initial_pos):
     open = set()
-    open.add((x,y))
+    open.add(initial_pos)
     closed = set()
 
-    s = 0
-
     while len(open) > 0:
-        p = open.pop()
-        # print(f'GOT {p}')
-        closed.add(p)
+        pos = open.pop()
+        closed.add(pos)
 
-        last = lines[p[1]][p[0]]
+        last = get_val(lines, pos)
 
-
-        for n in neighbors_pos(lines, p[0], p[1]):
-            val = lines[n[1]][n[0]]
-            # print(f'investigate {n}')
+        for n in neighbors(lines, pos):
+            val = get_val(lines, n)
             if val == 9 or val <= last:
                 continue
             if n not in closed:
@@ -73,7 +52,8 @@ def part1(filename):
     for y, line in enumerate(lines):
         for x, h in enumerate(line):
             low = True
-            for n in neighbors(lines, x, y):
+            for pos in neighbors(lines, (x, y)):
+                n = get_val(lines, pos)
                 if n <= h:
                     low = False
             if low:
@@ -87,25 +67,16 @@ def part2(filename):
     for y, line in enumerate(lines):
         for x, h in enumerate(line):
             low = True
-            for n in neighbors(lines, x, y):
-                if n <= h:
+            for n in neighbors(lines, (x, y)):
+                val = get_val(lines, n)
+                if val <= h:
                     low = False
             if low:
                 low_points.append((x,y))
 
-    sizes = []
-    for p in low_points:
-        b = flood(lines, p[0],p[1])
-        print(f'basin size: {b}')
-        sizes.append(b)
+    sizes = sorted([flood(lines, p) for p in low_points])
+    ans = functools.reduce(lambda x,y:x*y, sizes[-3:], 1)
 
-    sizes.sort()
-
-    ans = 1
-    for i in sizes[-3:]:
-        ans *= i
-
-    
     print(f'ANSWER: {ans}')
 
 
