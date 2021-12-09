@@ -51,12 +51,7 @@ def part1(filename):
     lines = parse_file(filename)
     for y, line in enumerate(lines):
         for x, h in enumerate(line):
-            low = True
-            for pos in neighbors(lines, (x, y)):
-                n = get_val(lines, pos)
-                if n <= h:
-                    low = False
-            if low:
+            if all(map(lambda pos: get_val(lines, pos) > h, neighbors(lines, (x, y)))):
                 ans += h + 1 
     print(f'ANSWER: {ans}')
 
@@ -66,12 +61,7 @@ def part2(filename):
     low_points = []
     for y, line in enumerate(lines):
         for x, h in enumerate(line):
-            low = True
-            for n in neighbors(lines, (x, y)):
-                val = get_val(lines, n)
-                if val <= h:
-                    low = False
-            if low:
+            if all(map(lambda pos: get_val(lines, pos) > h, neighbors(lines, (x, y)))):
                 low_points.append((x,y))
 
     sizes = sorted([flood(lines, p) for p in low_points])
