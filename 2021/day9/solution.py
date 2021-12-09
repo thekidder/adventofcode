@@ -25,6 +25,22 @@ def get_val(lines, pos):
     return lines[pos[1]][pos[0]]
 
 
+def low_points(lines):
+    for y, line in enumerate(lines):
+        for x, h in enumerate(line):
+            if all(map(lambda pos: get_val(lines, pos) > h, neighbors(lines, (x, y)))):
+                yield (x,y)
+
+
+def part1(filename):
+    ans = 0
+    lines = parse_file(filename)
+    for pos in low_points(lines):
+        h = get_val(lines, pos)
+        ans += h + 1
+    print(f'ANSWER: {ans}')
+
+
 def flood(lines, initial_pos):
     open = set()
     open.add(initial_pos)
@@ -46,25 +62,9 @@ def flood(lines, initial_pos):
     return len(closed)
 
 
-def part1(filename):
-    ans = 0
-    lines = parse_file(filename)
-    for y, line in enumerate(lines):
-        for x, h in enumerate(line):
-            if all(map(lambda pos: get_val(lines, pos) > h, neighbors(lines, (x, y)))):
-                ans += h + 1 
-    print(f'ANSWER: {ans}')
-
-
 def part2(filename):
     lines = parse_file(filename)
-    low_points = []
-    for y, line in enumerate(lines):
-        for x, h in enumerate(line):
-            if all(map(lambda pos: get_val(lines, pos) > h, neighbors(lines, (x, y)))):
-                low_points.append((x,y))
-
-    sizes = sorted([flood(lines, p) for p in low_points])
+    sizes = sorted([flood(lines, p) for p in low_points(lines)])
     ans = functools.reduce(lambda x,y:x*y, sizes[-3:], 1)
 
     print(f'ANSWER: {ans}')
