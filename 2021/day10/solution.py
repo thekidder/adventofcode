@@ -1,14 +1,3 @@
-from collections import defaultdict, Counter
-
-import re
-import math
-import sys
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
-
 def parse_file(filename):
     lines = []
     with open(filename, 'r') as f:
@@ -50,17 +39,6 @@ def part1(filename):
     print(f'ANSWER: {ans}')
 
 
-def valid_score(c):
-    if c == ')':
-        return 1
-    elif c == ']':
-        return 2
-    elif c == '}':
-        return 3
-    elif c == '>':
-        return 4
-
-
 def incomplete_lines(lines):
     for line in lines:
         open_chunks = []
@@ -73,7 +51,6 @@ def incomplete_lines(lines):
                     break
         else:
             yield open_chunks
-            
 
 
 def part2(filename):
