@@ -1,14 +1,5 @@
 from collections import defaultdict, Counter
 
-import re
-import math
-import sys
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
-
 def parse_file(filename):
     paths = []
     with open(filename, 'r') as f:
@@ -45,12 +36,9 @@ def make_paths(exits, path, next):
 
 def part1(filename):
     input = parse_file(filename)
-    ans = 0
-
     paths = []
-    pos = 'start'
-    for e in input[pos]:
-        paths.extend(make_paths(input, [pos], e))
+    for e in input['start']:
+        paths.extend(make_paths(input, ['start'], e))
 
     print(f'ANSWER: {len(paths)}')
 
@@ -91,11 +79,9 @@ def make_paths2(exits, path, next):
 
 def part2(filename):
     input = parse_file(filename)
-
     paths = []
-    pos = 'start'
-    for e in input[pos]:
-        paths.extend(make_paths2(input, Counter([pos]), e))
+    for e in input['start']:
+        paths.extend(make_paths2(input, Counter(['start']), e))
     
     print(f'ANSWER: {len(paths)}')
 
