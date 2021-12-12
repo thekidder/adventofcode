@@ -62,36 +62,32 @@ def can_add(cave, path):
     if big(cave):
         return True
 
-    # if len([x for x in filter(lambda x: x == cave, path)]) > 1:
-    #     return False
+    has_multiple_small_caves = any(map(lambda i: not big(i[0]) and i[1] > 1, path.items()))
 
-    path_counts = Counter(path)
-    has_mult = False
-    for c, cnt in path_counts.items():
-        if c == cave and cnt > 1:
-            return False
-        if c != cave and not big(c) and cnt > 1:
-            has_mult = True
+    if path[cave] > 1:
+        return False
 
-    if has_mult:
-        return path_counts[cave] == 0
+    if has_multiple_small_caves:
+        return path[cave] == 0
     
     return True
 
 
 def make_paths2(exits, path, next):
     if next == 'end':
-        return [path[:] + [next]]
+        return [path + Counter([next])]
 
     if not can_add(next, path):
         return []
 
+    path = path + Counter([next])
+
     paths = []
-    path = path[:] + [next]
     for e in exits[next]:
         paths.extend(make_paths2(exits, path, e))
 
     return paths
+
 
 def part2(filename):
     input = parse_file(filename)
@@ -99,14 +95,8 @@ def part2(filename):
     paths = []
     pos = 'start'
     for e in input[pos]:
-        paths.extend(make_paths2(input, [pos], e))
+        paths.extend(make_paths2(input, Counter([pos]), e))
     
-    paths = [','.join(p) for p in paths]
-    paths = set(paths)
-    paths = sorted(paths)
-    for p in paths:
-        print(p)
-
     print(f'ANSWER: {len(paths)}')
 
 
