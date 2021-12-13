@@ -19,6 +19,7 @@ def parse_file(filename):
 
 
 def part1(filename):
+    input = parse_file(filename)
     ans = 0
     print(f'ANSWER: {ans}')
 
