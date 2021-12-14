@@ -38,15 +38,10 @@ def part1(filename):
 
 def part2(filename):
     template,rules = parse_file(filename)
-    first = template[:2]
-    last = template[-2:]
     polymer = Counter(pairs(template))
 
     for _ in range(40):
         next = Counter(polymer)
-
-        first = first[0] + rules[first]
-        last = rules[last] + last[1]
 
         for rule, cnt in polymer.items():
             new_letter = rules[rule]
@@ -56,13 +51,10 @@ def part2(filename):
 
         polymer = next
 
-    cnts = Counter()
+    cnts = Counter([template[0]])
     for rule, cnt in polymer.items():
-        cnts[rule[0]] += cnt * 0.5
-        cnts[rule[1]] += cnt * 0.5
+        cnts[rule[1]] += cnt
 
-    cnts[first[0]] += 0.5
-    cnts[last[1]] += 0.5
     top = cnts.most_common()
     print(int(top[0][1] - top[-1][1]))
 
