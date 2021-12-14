@@ -1,13 +1,4 @@
-from collections import defaultdict, Counter
-
-import re
-import math
-import sys
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
+from collections import Counter
 
 def parse_file(filename):
     rules = {}
@@ -17,7 +8,6 @@ def parse_file(filename):
             if '->' in line:
                 rule = line.split('->')
                 rules[rule[0].strip()] = rule[1].strip()
-
 
     return template, rules
 
@@ -46,15 +36,13 @@ def part1(filename):
     print(top[0][1] - top[-1][1])
 
 
-
 def part2(filename):
     template,rules = parse_file(filename)
-
     first = template[:2]
     last = template[-2:]
     polymer = Counter(pairs(template))
 
-    for i in range(40):
+    for _ in range(40):
         next = Counter(polymer)
 
         first = first[0] + rules[first]
