@@ -24,16 +24,15 @@ def parse_file(filename):
 
 def pairs(template):
     for i in range(len(template) - 1):
-        yield template[i:i+2], i
+        yield template[i:i+2]
 
 
 def part1(filename):
     template,rules = parse_file(filename)
-    ans = 0
     print(rules)
     for i in range(10):
         out = ''
-        for pair, idx in pairs(template):
+        for pair in pairs(template):
             out += pair[0]
             if pair in rules:
                 out += rules[pair]
@@ -50,18 +49,10 @@ def part1(filename):
 
 def part2(filename):
     template,rules = parse_file(filename)
-    ans = 0
-    print(rules)
 
-    first = None
-    last = None
-
-    polymer = Counter()
-    for pair, idx in pairs(template):
-        if first is None:
-            first = pair
-        polymer.update([pair])
-        last = pair
+    first = template[:2]
+    last = template[-2:]
+    polymer = Counter(pairs(template))
 
     for i in range(40):
         next = Counter(polymer)
@@ -70,29 +61,22 @@ def part2(filename):
         last = rules[last] + last[1]
 
         for rule, cnt in polymer.items():
-            if cnt > 0 and rule in rules:
-                new_letter = rules[rule]
-                next[rule] -= cnt
-                next[rule[0] + new_letter] += cnt
-                next[new_letter + rule[1]] += cnt
+            new_letter = rules[rule]
+            next[rule] -= cnt
+            next[rule[0] + new_letter] += cnt
+            next[new_letter + rule[1]] += cnt
 
         polymer = next
 
-        # print(f'ITERATION {i+1}: {first} {last} {polymer}')
-
-    cnts = defaultdict(int)
+    cnts = Counter()
     for rule, cnt in polymer.items():
-        cnts[rule[0]] += cnt
-        cnts[rule[1]] += cnt
+        cnts[rule[0]] += cnt * 0.5
+        cnts[rule[1]] += cnt * 0.5
 
-    for rule, cnt in cnts.items():
-        if rule in first or rule in last:
-            cnts[rule] += 1
-
-        cnts[rule] /= 2
-    print(cnts)
-    top = Counter(cnts).most_common()
-    print(top[0][1] - top[-1][1])
+    cnts[first[0]] += 0.5
+    cnts[last[1]] += 0.5
+    top = cnts.most_common()
+    print(int(top[0][1] - top[-1][1]))
 
 
 part2('input.txt')
