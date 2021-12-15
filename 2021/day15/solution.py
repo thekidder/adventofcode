@@ -1,14 +1,3 @@
-from collections import defaultdict, Counter
-
-import re
-import math
-import sys
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
-
 def parse_file(filename):
     lines = []
     with open(filename, 'r') as f:
@@ -33,29 +22,31 @@ def neighbors(grid, pos):
             yield (nx,ny)
 
 
-def part1(filename):
-    input = parse_file(filename)
-    pos = (0,0)
-    exit = (len(input[0]) - 1, len(input) - 1)
-    ans = 0
-    print(input)
-
+def map_cost(grid, enter, exit):
     costs = {
-        pos: 0
+        enter: 0
     }
 
-    open = set([pos])
+    open = set([enter])
 
     while len(open) > 0:
-        x,y = open.pop()
-        cost = costs[(x,y)]
-        for nx,ny in neighbors(input, (x,y)):
-            ncost = cost + input[ny][nx]
+        pos = open.pop()
+        cost = costs[pos]
+        for nx,ny in neighbors(grid, pos):
+            ncost = cost + grid[ny][nx]
             if (nx,ny) not in costs or ncost < costs[(nx,ny)]:
                 costs[(nx,ny)] = ncost
                 open.add((nx,ny))
+    
+    return costs[exit]
 
-    print(f'ANSWER: {costs[exit]}')
+
+def part1(filename):
+    input = parse_file(filename)
+    enter = (0,0)
+    exit = (len(input[0]) - 1, len(input) - 1)
+
+    print(f'ANSWER: {map_cost(input, enter, exit)}')
 
 
 def add_cost(cost):
@@ -86,26 +77,10 @@ def build_map(input):
 def part2(filename):
     input = parse_file(filename)
     input = build_map(input)
-    pos = (0,0)
+    enter = (0,0)
     exit = (len(input[0]) - 1, len(input) - 1)
-    print(exit)
 
-    costs = {
-        pos: 0
-    }
-
-    open = set([pos])
-
-    while len(open) > 0:
-        x,y = open.pop()
-        cost = costs[(x,y)]
-        for nx,ny in neighbors(input, (x,y)):
-            ncost = cost + input[ny][nx]
-            if (nx,ny) not in costs or ncost < costs[(nx,ny)]:
-                costs[(nx,ny)] = ncost
-                open.add((nx,ny))
-
-    print(f'ANSWER: {costs[exit]}')
+    print(f'ANSWER: {map_cost(input, enter, exit)}')
 
 
 part2('input.txt')
