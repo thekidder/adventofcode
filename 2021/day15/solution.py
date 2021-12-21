@@ -54,22 +54,20 @@ def add_cost(cost):
 
 
 def transform_line(input):
-    return [l for l in map(add_cost, input)]
+    return map(add_cost, input)
 
 
 def build_map(input):
-    input = input[:]
     output = []
     for y in range(5):
         for line in input:
-            f = []
-            l = line[:]
+            output_line = []
             for x in range(5):
-                f.extend(l)
-                l = transform_line(l)
-            output.append(f)
+                output_line.extend(line)
+                line = [x for x in transform_line(line)]
+            output.append(output_line)
         for i in range(len(input)):
-            input[i] = transform_line(input[i])
+            input[i] = [x for x in transform_line(input[i])]
 
     return output
 
