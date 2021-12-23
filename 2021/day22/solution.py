@@ -97,7 +97,7 @@ def uniq(l, r2):
 def part2(filename):
     cubes = set()
     input = parse_file(filename)
-    for line in input:
+    for i,line in enumerate(input):
         state, xmin,xmax,ymin,ymax,zmin,zmax = line
         r2 = (xmin,xmax,ymin,ymax,zmin,zmax)
         next = set(cubes)
