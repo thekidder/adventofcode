@@ -1,14 +1,4 @@
-from collections import defaultdict, Counter
-
-import re
-import math
-import sys
 import copy
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
 
 room_pos = (2, 4, 6, 8)
 room_pos_set = set(room_pos)
@@ -67,8 +57,10 @@ def decode(s):
         'cost': s[1]
     }
 
+
 def moves(state):
     room_len = len(state['rooms'][0])
+
     # moves into rooms
     room_moves = False
     for i in range(len(state['hall'])):
@@ -87,7 +79,6 @@ def moves(state):
             n['cost'] += costs[bot] * (abs(i - room_pos[dest_room]) + 1 + dest)
             yield n
             room_moves = True
-
 
     if room_moves:
         return
@@ -126,14 +117,10 @@ def solve(state):
         if ss in visited and visited[ss] <= c:
             continue
         visited[ss] = c
-        # print(s)
         if solved(s):
-            # print(f'found solution with cost {s["cost"]}')
             min_cost = min(s['cost'], min_cost)
         else:
             for n in moves(s):
-                # if encode(n) in visited:
-                #     continue
                 universes.append(n)
         i += 1
     print(f'ANSWER: {min_cost}')
@@ -163,4 +150,4 @@ input2 = {
     'cost': 0
 }
 
-solve(input2)
+solve(input)
