@@ -1,6 +1,3 @@
-def add(x,y):
-    return x+y
-
 def grouped_input(filename, parse_func):
     with open(filename, 'r') as f:
         return [
