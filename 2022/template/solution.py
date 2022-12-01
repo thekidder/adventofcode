@@ -1,8 +1,11 @@
 from collections import defaultdict, Counter
 
-import re
+import functools
 import math
+import re
 import sys
+
+from helpers import *
 
 # regex example
 # pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
@@ -18,11 +21,7 @@ def parse_file(filename):
     return lines
 
     # group by newlines
-    # with open(filename, 'r') as f:
-    #     return [
-    #         [x for x in map(int, l.split('\n'))] 
-    #         for l in f.read().split('\n\n')
-    #     ]
+    # return grouped_input(filename, int)
 
 
 
@@ -37,3 +36,4 @@ def part2(filename):
 
 
 part1('example.txt')
+# part1('input.txt')
