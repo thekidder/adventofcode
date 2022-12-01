@@ -17,6 +17,14 @@ def parse_file(filename):
 
     return lines
 
+    # group by newlines
+    # with open(filename, 'r') as f:
+    #     return [
+    #         [x for x in map(int, l.split('\n'))] 
+    #         for l in f.read().split('\n\n')
+    #     ]
+
+
 
 def part1(filename):
     input = parse_file(filename)
