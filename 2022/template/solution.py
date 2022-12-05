@@ -26,16 +26,19 @@ def parse_file(filename):
 
 
 def part1(filename):
-    print(filename)
     input = parse_file(filename)
     ans = 0
-    print(f'ANSWER: {ans}')
+    print(f'P1 {filename}: {ans}')
 
 
 def part2(filename):
-    print(filename)
-    pass
+    input = parse_file(filename)
+    ans = 0
+    print(f'P1 {filename}: {ans}')
 
 
 part1('example.txt')
-part1('input.txt')
+# part1('input.txt')
+
+# part2('example.txt')
+# part2('input.txt')
