@@ -4,25 +4,23 @@ def parse_file(filename):
         input = f.readlines()
         stack = []      
         while len(input) > 0:
-            l = input[0].strip()
+            command = input[0][2:].strip()
             input = input[1:]
-            if l.startswith('$'):
-                command = l[2:].strip()
-                if command.startswith('ls'):
-                    while len(input) > 0 and not input[0].startswith('$'):
-                        file = input[0]
-                        store(tree, stack, file)
-                        input = input[1:]
-                elif command.startswith('cd'):
-                    dir = command[2:].strip()
-                    if dir == '/':
-                        stack = []
-                    elif dir == '..':
-                        stack.pop()
-                    else:
-                        stack.append(dir)
+            if command.startswith('ls'):
+                while len(input) > 0 and not input[0].startswith('$'):
+                    file = input[0]
+                    store(tree, stack, file)
+                    input = input[1:]
+            elif command.startswith('cd'):
+                dir = command[2:].strip()
+                if dir == '/':
+                    stack = []
+                elif dir == '..':
+                    stack.pop()
                 else:
-                    print('ERROR')
+                    stack.append(dir)
+            else:
+                print('ERROR')
     return tree
 
 
@@ -39,9 +37,8 @@ def size(tree):
 def store(tree, stack, file):
     ptr = tree
     stack = stack[:]
-    while(len(stack) > 0):
-        dir = stack.pop(0)
-        ptr = ptr[dir]
+    while len(stack) > 0:
+        ptr = ptr[stack.pop(0)]
 
     if file.startswith('dir'):
         file = file[4:].strip()
