@@ -60,7 +60,7 @@ def calc_p1(tree):
 
 
 def calc_p2(tree, min, used):
-    needed = 30000000 - (70000000 - used)
+    needed = used - 40000000
     for v in tree.values():
         if type(v) is dict:
             s = size(v)
