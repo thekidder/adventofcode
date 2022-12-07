@@ -12,7 +12,7 @@ import sys
 
 def parse_file(filename):
     with open(filename, 'r') as f:
-        lines = f.readlines()
+        lines = f.read()
         sections = lines.split('\n\n')
 
         return None
