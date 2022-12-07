@@ -5,6 +5,7 @@ import math
 import re
 import sys
 
+
 # regex example
 # pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
 # m = line_pattern.match(line)
@@ -12,7 +13,7 @@ import sys
 
 def parse_file(filename):
     with open(filename, 'r') as f:
-        lines = f.read()
+        lines = f.readlines()
         sections = lines.split('\n\n')
 
         return None
