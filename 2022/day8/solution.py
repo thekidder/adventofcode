@@ -13,9 +13,7 @@ def get(trees, coord):
 
 
 def next(coord, dir):
-    x, y = coord
-    dx,dy = dir
-    return (x+dx,y+dy)
+    return (coord[0]+dir[0],coord[1]+dir[1])
 
 
 def visible(trees, coord, dir):
@@ -25,6 +23,7 @@ def visible(trees, coord, dir):
             return False
         coord = next(coord, dir)
     return True
+
 
 def scenic(trees, coord, dir):
     h = get(trees, coord)
@@ -50,16 +49,14 @@ def parse_file(filename):
 
 
 def part1(filename):
-    ans = 0
     input = parse_file(filename)
+    ans = 0
     for x in range(len(input[0])):
         for y in range(len(input)):
             for dir in dirs:
                 if visible(input, (x,y), dir):
                     ans += 1
                     break
-                
-
     print(f'P1 {filename}: {ans}')
 
 

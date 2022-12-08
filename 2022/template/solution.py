@@ -30,6 +30,7 @@ def parse_file(filename):
 
 def part1(filename):
     input = parse_file(filename)
+    print(input)
     ans = 0
     print(f'P1 {filename}: {ans}')
 
