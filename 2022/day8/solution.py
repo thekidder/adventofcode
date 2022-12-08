@@ -1,3 +1,6 @@
+import functools
+import math
+
 dirs = [
     (1, 0),
     (-1, 0),
@@ -48,28 +51,27 @@ def parse_file(filename):
         return trees
 
 
+def coords(input):
+    for x in range(len(input[0])):
+        for y in range(len(input)):
+            yield x, y
+
+
 def part1(filename):
     input = parse_file(filename)
     ans = 0
-    for x in range(len(input[0])):
-        for y in range(len(input)):
-            for dir in dirs:
-                if visible(input, (x,y), dir):
-                    ans += 1
-                    break
+    for x, y in coords(input):
+        if any(map(lambda dir: visible(input, (x,y), dir), dirs)):
+            ans += 1
     print(f'P1 {filename}: {ans}')
 
 
 def part2(filename):
     input = parse_file(filename)
     ans = 0
-    for x in range(len(input[0])):
-        for y in range(len(input)):
-            s = 1
-            for dir in dirs:
-                s *= scenic(input, (x,y), dir)
-            if s > ans:
-                ans = s
+    for x, y in coords(input):
+        s = math.prod(map(lambda dir: scenic(input, (x,y), dir), dirs))
+        ans = max(ans, s)
     print(f'P2 {filename}: {ans}')
 
 
