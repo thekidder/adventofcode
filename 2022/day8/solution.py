@@ -1,5 +1,5 @@
-import functools
 import math
+import operator
 
 dirs = [
     (1, 0),
@@ -16,7 +16,7 @@ def get(trees, coord):
 
 
 def next(coord, dir):
-    return (coord[0]+dir[0],coord[1]+dir[1])
+    return tuple(map(operator.add, coord, dir))
 
 
 def visible(trees, coord, dir):
@@ -43,11 +43,7 @@ def parse_file(filename):
     trees = []
     with open(filename, 'r') as f:
         for line in f:
-            row = []
-            for t in line.strip():
-                row.append(int(t))
-            trees.append(row)
-            
+            trees.append([int(t) for t in line.strip()])
         return trees
 
 
