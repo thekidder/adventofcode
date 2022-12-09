@@ -1,3 +1,5 @@
+import operator
+
 def parse_file(filename):
     lines = []
     with open(filename, 'r') as f:
@@ -13,9 +15,9 @@ def sign(n):
 
 
 def next(head, tail):
-    dir = (tail[0] - head[0], tail[1] - head[1])
-    if abs(dir[0]) > 1 or abs(dir[1]) > 1:
-        return (tail[0] - sign(dir[0]), tail[1] - sign(dir[1]))
+    dir = tuple(map(operator.sub, head, tail))
+    if any(map(lambda x: abs(x)>1, dir)):
+        return tuple(map(operator.add, tail, map(sign, dir)))
     return tail
 
 
