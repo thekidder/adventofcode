@@ -1,23 +1,8 @@
-from collections import defaultdict, Counter
-
-import functools
-import math
-import re
 import sys
-
-from helpers import *
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
 
 def parse_file(filename):
     with open(filename, 'r') as f:
         return [x for x in map(int, f.read().split(','))]
-
-    # group by newlines
-    # return grouped_input(filename, int)
 
 
 def load(memory, ptr):
@@ -56,10 +41,11 @@ def run(memory):
         elif op == 99:
             break
         else:
-            print('ERROR')
+            print('ERROR {op}')
             return None
 
     return memory
+
 
 def part1(filename):
     input = parse_file(filename)
