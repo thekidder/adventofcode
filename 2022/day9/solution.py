@@ -27,25 +27,9 @@ dirs = {
 }
 
 
-def part1(filename):
+def solve(filename, num_knots):
     input = parse_file(filename)
-    head = (0, 0)
-    tail = (0, 0)
-    visited = {(0,0): True}
-
-    for dir,steps in input:
-        d = dirs[dir]
-        for i in range(steps):
-            head = (head[0] + d[0], head[1] + d[1])
-            tail = next(head, tail)
-            visited[tail] = True
-
-    print(f'P1 {filename}: {len(visited)}')
-
-
-def part2(filename):
-    input = parse_file(filename)
-    knots = [(0,0)]*10
+    knots = [(0,0)]*num_knots
     visited = {(0,0): True}
 
     for dir,steps in input:
@@ -58,8 +42,8 @@ def part2(filename):
     print(f'P2 {filename}: {len(visited)}')
 
 
-part1('example.txt')
-part1('input.txt')
+solve('example.txt', 2)
+solve('input.txt', 2)
 
-part2('example2.txt')
-part2('input.txt')
+solve('example2.txt', 10)
+solve('input.txt', 10)
