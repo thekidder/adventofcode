@@ -14,35 +14,64 @@ import sys
 def parse_file(filename):
     with open(filename, 'r') as f:
         lines = f.read()
-        sections = lines.split('\n\n')
+        return lines.split('\n')
 
-        return None
-    # lines = []
-    # with open(filename, 'r') as f:
-    #     for line in f:
-    #         lines.append(int(line))
 
-    # return lines
+buffer = ['.'] * 6 * 40
 
-    # group by newlines
-    # return grouped_input(filename, int)
+
+def draw(pos):
+    pos = pos - 1
+    if pos < 0 or pos >= len(buffer):
+        return
+    buffer[pos] = '#'
+
+
+def printscrn():
+    for i in range(len(buffer)):
+        print(buffer[i], end = '')
+        if (i+1) % 40 == 0:
+            print()
 
 
 def part1(filename):
+    global buffer
+    buffer = ['.'] * 6 * 40
+    cycle = 1
     input = parse_file(filename)
-    print(input)
+    pipeline = []
+    x = 1
     ans = 0
+    while len(input):
+        popped_arg = None
+        if len(pipeline) > 0:
+            popped_arg = pipeline.pop(0)
+        else:
+            line = input[0]
+            input = input[1:]
+            if line.startswith('noop'):
+                pass
+            else:
+                # print(line)
+                _, arg = line.split(' ')
+                arg = int(arg)
+                # print(x,arg)
+                pipeline.append(arg)
+
+        pos = cycle % 40
+        if pos == (x) or pos == x+1 or pos == (x+2):
+            draw(cycle)
+
+        if cycle >= 20 and (cycle + 20) % 40 == 0:
+            print(ans,x,cycle)
+            ans += (x * cycle)
+
+        cycle += 1
+        if popped_arg is not None:
+            x += popped_arg
     print(f'P1 {filename}: {ans}')
-
-
-def part2(filename):
-    input = parse_file(filename)
-    ans = 0
-    print(f'P2 {filename}: {ans}')
+    printscrn()
 
 
 part1('example.txt')
-# part1('input.txt')
-
-# part2('example.txt')
-# part2('input.txt')
+part1('input.txt')
