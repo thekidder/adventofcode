@@ -65,7 +65,7 @@ def part2(filename):
             n = norbits(orbits, b)
             s  = b
 
-    ans = norbits(orbits, 'YOU', b)
+    ans = norbits(orbits, 'YOU', b) + norbits(orbits, dest, b)
     print(f'P2 {filename}: {ans}')
     
 
