@@ -65,12 +65,12 @@ def part2(filename):
             n = norbits(orbits, b)
             s  = b
 
-    ans = norbits(orbits, 'YOU', b) + norbits(orbits, dest, b)
+    ans = norbits(orbits, 'YOU', s) + norbits(orbits, dest, s) - 1
     print(f'P2 {filename}: {ans}')
     
 
-# part1('example.txt')
-# part1('input.txt')
+part1('example.txt')
+part1('input.txt')
 
 part2('example2.txt')
-# part2('input.txt')
+part2('input.txt')
