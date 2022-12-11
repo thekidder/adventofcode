@@ -13,7 +13,7 @@ def parse_file(filename):
                 'expr': lines[2][19:],
                 'test': int(lines[3][21:]),
                 'true_monkey': int(lines[4][29:]),
-                'false_monkey': int(lines[5][29:]),
+                'false_monkey': int(lines[5][30:]),
                 'inspected': 0,
             })
         return r
