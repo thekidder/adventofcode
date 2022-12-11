@@ -1,3 +1,4 @@
+import math
 import operator
 
 def parse_file(filename):
@@ -7,83 +8,48 @@ def parse_file(filename):
         r = []
         for monkey in monkies:
             lines = monkey.split('\n')
-            items = []
-            if len(lines[1][18:]) > 0:
-                items = list(map(int, lines[1][18:].split(',')))
-            op,arg = lines[2][23:].split(' ')
-            if op == '*':
-                op = operator.mul
-            else:
-                op = operator.add
-            test = int(lines[3][21:])
-            true_monkey = int(lines[4][29:])
-            false_monkey = int(lines[5][29:])
             r.append({
-                'items': items,
-                'op': op,
-                'arg': arg,
-                'test': test,
-                'true_monkey': true_monkey,
-                'false_monkey': false_monkey,
+                'items': list(map(int, lines[1][18:].split(','))),
+                'expr': lines[2][19:],
+                'test': int(lines[3][21:]),
+                'true_monkey': int(lines[4][29:]),
+                'false_monkey': int(lines[5][29:]),
                 'inspected': 0,
             })
-
         return r
+
+
+def round(monkies, reduce_fn):
+    for m in monkies:
+        while len(m['items']) > 0:
+            m['inspected'] += 1
+            old = m['items'].pop(0)
+            item = reduce_fn(eval(m['expr']))
+            next = m['true_monkey'] if item % m['test'] == 0 else m['false_monkey']
+            monkies[next]['items'].append(item)
+
+
+def score(monkies):
+    return math.prod(sorted(map(lambda x: x['inspected'], monkies))[-2:])
 
 
 def part1(filename):
     input = parse_file(filename)
-    print(input)
-    for r in range(20):
-        for i in range(len(input)):
-            while len(input[i]['items']) > 0:
-                input[i]['inspected'] += 1
-                item = input[i]['items'].pop(0)
-                if input[i]['arg'] =='old':
-                    item = input[i]['op'](item, item)
-                else:
-                    item = input[i]['op'](item, int(input[i]['arg']))
-                item //= 3
-                if item % input[i]['test'] == 0:
-                    input[input[i]['true_monkey']]['items'].append(item)
-                else:
-                    input[input[i]['false_monkey']]['items'].append(item)
-    for i, m in enumerate(input):
-        print(i, m['inspected'])
+    for _ in range(20):
+        round(input, lambda x: x // 3)
+    print(f'P1 MONKEY BZNZ {filename}: {score(input)}')
 
-
-def mod(input):
-    m = 1
-    for i in range(len(input)):
-        m *= input[i]['test']
-    return m
 
 def part2(filename):
     input = parse_file(filename)
-    total_m = mod(input)
-
-    print(input)
-    for r in range(10000):
-        for i in range(len(input)):
-            while len(input[i]['items']) > 0:
-                input[i]['inspected'] += 1
-                item = input[i]['items'].pop(0)
-                if input[i]['arg'] =='old':
-                    item = input[i]['op'](item, item)
-                else:
-                    item = input[i]['op'](item, int(input[i]['arg']))
-                item = item % total_m
-                if item % input[i]['test'] == 0:
-                    input[input[i]['true_monkey']]['items'].append(item)
-                else:
-                    input[input[i]['false_monkey']]['items'].append(item)
-    print(f'round {r}')
-    for i, m in enumerate(input):
-        print(i, m['inspected'])
+    total_m = math.prod(map(lambda x: x['test'], input))
+    for _ in range(10000):
+        round(input, lambda x: x % total_m)
+    print(f'P2 MONKEY BZNZ {filename}: {score(input)}')
 
 
-# part1('example.txt')
-# part1('input.txt')
+part1('example.txt')
+part1('input.txt')
 
-# part2('example.txt')
+part2('example.txt')
 part2('input.txt')
