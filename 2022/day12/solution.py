@@ -6,18 +6,20 @@ import sys
 
 def parse_file(filename):
     with open(filename, 'r') as f:
-        result = defaultdict(lambda:chr(ord('z')-100))
+        result = defaultdict(lambda:-1000)
         for y,line in enumerate(f.readlines()):
             for x,val in enumerate(line):
-                result[(x,y)] = val
-        return result
-
-
-def find(m, symbol):
-    for coord,val in m.items():
-        if val == symbol:
-            return coord
-
+                coord = (x,y)
+                if val == 'S':
+                    result[coord] = 0
+                    start = coord
+                elif val == 'E':
+                    result[coord] = 25
+                    end = coord
+                else:
+                    result[coord] = ord(val) - ord('a')
+        return result, start, end
+        
 
 neighbors = [(-1,0),(1,0),(0,1),(0,-1)]
 def candidates(m, coord):
@@ -25,16 +27,12 @@ def candidates(m, coord):
     for dir in neighbors:
         n = tuple(map(operator.add, coord, dir))
         y = m[n]
-        if ord(x) - ord(y) <= 1:
+        if x-y <= 1:
             yield n
 
 
 def solve(filename):
-    input = parse_file(filename)
-    start = find(input, 'S')
-    end = find(input, 'E')
-    input[start] = 'a'
-    input[end] = 'z'
+    input,start,end = parse_file(filename)
     distances_from_end = {}
     # queue is of coord, num_steps
     queue = [(end, 1)]
@@ -47,7 +45,7 @@ def solve(filename):
 
     ans = sys.maxsize
     for c,v in distances_from_end.items():
-        if input[c] == 'a':
+        if input[c] == 0:
             ans = min(ans, v)
     print(f'P1 {filename}: dist to E: {distances_from_end[start]}; dist to any a: {ans}')
 
