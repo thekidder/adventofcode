@@ -6,7 +6,7 @@ import sys
 
 def parse_file(filename):
     with open(filename, 'r') as f:
-        result = defaultdict(lambda:None)
+        result = defaultdict(lambda:chr(ord('z')-100))
         for y,line in enumerate(f.readlines()):
             for x,val in enumerate(line):
                 result[(x,y)] = val
@@ -25,7 +25,7 @@ def candidates(m, coord):
     for dir in neighbors:
         n = tuple(map(operator.add, coord, dir))
         y = m[n]
-        if y is not None and ord(x) - ord(y) <= 1:
+        if ord(x) - ord(y) <= 1:
             yield n
 
 
