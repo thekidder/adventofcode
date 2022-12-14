@@ -46,11 +46,6 @@ def simulate(m, coord, max_y, floor):
     return 0
 
 
-# def simulate(m, src, max_y, floor):
-#     coord = sim(m, src, max_y)
-    
-
-
 def part1(filename):
     m,max_y = parse_file(filename)
     ans = 0
