@@ -72,8 +72,6 @@ def candidates(sensor, closest):
             yield (sensor[0]+d, i)
 
 
-def find_clear_size(sensors, dists, size):
-
 def part2(filename, size):
     sensors,beacons = parse_file(filename)
     closest = {}
