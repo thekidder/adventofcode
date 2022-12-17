@@ -187,7 +187,8 @@ def part2(filename):
 
         for p in next:
             i += 1
-            heapq.heappush(paths, (-p['total'], i, p))
+            if p['max_est'] > max_flow:
+                heapq.heappush(paths, (-p['total'], i, p))
             if p['total'] > max_flow:
                 print(f'FOUND NEW MAX {p["total"]} {p}')
             max_flow = max(max_flow, p['total'])
