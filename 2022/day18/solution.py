@@ -61,22 +61,21 @@ def part2(filename):
         all = set()
         while len(q) > 0:
             c = q.pop()
-            if c not in filled:                
-                if c in memo and memo[c]:
-                    break
-                all.add(c)
-                if any(map(operator.le, c, min_coord)) or any(map(operator.ge, c, max_coord)):
-                    return False
-                for n in [
-                    vadd(c, (-1,0,0)),
-                    vadd(c, (0,-1,0)),
-                    vadd(c, (0,0,-1)),
-                    vadd(c, (1,0,0)),
-                    vadd(c, (0,1,0)),
-                    vadd(c, (0,0,1)),
-                ]:
-                    if n not in all and n not in filled:
-                        q.append(n)
+            if c in memo and memo[c]:
+                break
+            if any(map(operator.le, c, min_coord)) or any(map(operator.ge, c, max_coord)):
+                return False
+            for n in [
+                vadd(c, (-1,0,0)),
+                vadd(c, (0,-1,0)),
+                vadd(c, (0,0,-1)),
+                vadd(c, (1,0,0)),
+                vadd(c, (0,1,0)),
+                vadd(c, (0,0,1)),
+            ]:
+                if n not in all and n not in filled:
+                    q.append(n)
+                    all.add(n)
         for c in all:
             memo[c] = True
         return True
