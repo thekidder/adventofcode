@@ -83,21 +83,22 @@ def most_geodes(blueprint, mins):
         t = state[8]
         next_robot = state[9]
 
+        # prune states that are no long necessary
         if t == mins:
             continue
-
-        me = max_est(state, mins)
-        if me < max_geodes:
+        if max_est(state, mins) < max_geodes:
             continue
 
         should_build = can_build(blueprint, next_robot, state)
 
+        # collect resources
         for i in range(4):
             state[i] += state[i+4]
 
+        # keep score
         max_geodes = max(max_geodes, state[indices['geode']])
-        
 
+        # branch states
         if should_build:
             for amt,robottype in blueprint[next_robot]:
                 state[indices[robottype]] -= amt
