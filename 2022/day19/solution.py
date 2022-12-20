@@ -119,8 +119,8 @@ def solve(blueprints, time):
         s = most_geodes(bp, time)
         quality += s * (i+1)
         score *= s
-        print(f'calc {i+1} as {s} ({quality}, {score})...')
-    print(f'solve: {quality}, {score}')
+        print(f'calc {i+1} as {s} ({quality} P1, {score} P2)...')
+    print(f'solve: {quality} P1, {score} P2')
 
 ex = parse_file('example.txt')
 input = parse_file('input.txt')
