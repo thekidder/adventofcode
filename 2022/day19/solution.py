@@ -26,69 +26,88 @@ def parse_file(filename):
         return r
 
 
-def can_build(blueprint, robot, resources):
+def can_build(blueprint, robot, state):
     reqs = blueprint[robot]
-    return all(map(lambda r: resources[r[1]] >= r[0], reqs))
+    return all(map(lambda r: state[indices[r[1]]] >= r[0], reqs))
 
 
-def max_est(robot, resources, t, max_t):
-    geodebots = robot['geode']
-    geodes = resources['geode']
+def max_est(state, max_t):
+    geodebots = state[indices['geode']+4]
+    geodes = state[indices['geode']]
+    t = state[8]
     for _ in range(t, max_t):
         geodes += geodebots
         geodebots += 1
     return geodes
 
 
-all_resources = ['clay', 'ore', 'obsidian', 'geode']
+def max_cost_of(blueprint, resource):
+    m = 0
+    for reqs in blueprint.values():
+        for amt,req in reqs:
+            if req == resource:
+                m = max(amt, m)
+    return m
 
-def clone(blueprint, resources, robots, t):
-    if can_build(blueprint, 'geode', resources):
-        return [((resources, robots, t, 'geode'))]
-    if can_build(blueprint, 'obsidian', resources):
-        return [((resources, robots, t, 'obsidian'))]
+all_resources = ['clay', 'ore', 'obsidian', 'geode']
+indices = {x:i for i,x in enumerate(all_resources)}
+
+def branch_states(blueprint, state):
+    if can_build(blueprint, 'geode', state[:4]):
+        return [state[:9] + ['geode',]]
+    if can_build(blueprint, 'obsidian', state[:4]):
+        return [state[:9] + ['obsidian',]]
     res = []
+
+    robots = state[4:8]
     for r in all_resources:
-        if any(map(lambda x: robots[x[1]] < 1, blueprint[r])):
+        # don't try to build robots if have no robots building its dependencies
+        if any(map(lambda x: robots[indices[x[1]]] < 1, blueprint[r])):
             continue
-        nrobots = copy.deepcopy(robots)
-        nresources = copy.deepcopy(resources)
-        res.append((nresources, nrobots, t, r))
+        # don't build robots if we're already producing enough
+        if r != 'geode' and state[indices[r]+4] > max_cost_of(blueprint, r):
+            continue
+                
+        next_state = state[:8]
+        res.append(next_state + [state[8], r])
     return res
 
 
 def most_geodes(blueprint, mins):
-    resources = defaultdict(int)
-    robots = defaultdict(int)
-    robots['ore'] = 1
+    # world state is represented as a single flat list with:
+    # num resources, num robots, time, next robot index to build
 
-    worlds = clone(blueprint, resources, robots, 0)
+    worlds = branch_states(blueprint, [0,0,0,0, 0,1,0,0, 0])
     max_geodes = 0
 
     while len(worlds):
-        resources, robots, t, next_robot = worlds.pop(-1)
+        state = worlds.pop(-1)
+
+        t = state[8]
+        next_robot = state[9]
+
         if t == mins:
             continue
 
-        me = max_est(robots, resources, t, mins)
+        me = max_est(state, mins)
         if me < max_geodes:
             continue
 
-        should_b = can_build(blueprint, next_robot, resources)
+        should_build = can_build(blueprint, next_robot, state)
 
-        for r,n in robots.items():
-            resources[r] += n
+        for i in range(4):
+            state[i] += state[i+4]
 
-        max_geodes = max(max_geodes, resources['geode'])
-        nrobots = copy.deepcopy(robots)
-        nresources = copy.deepcopy(resources)
-        if should_b:
+        max_geodes = max(max_geodes, state[indices['geode']])
+        
+
+        if should_build:
             for amt,robottype in blueprint[next_robot]:
-                nresources[robottype] -= amt
-            nrobots[next_robot] += 1
-            worlds.extend(clone(blueprint, nresources, nrobots, t+1))
+                state[indices[robottype]] -= amt
+            state[indices[next_robot]+4] += 1
+            worlds.extend(branch_states(blueprint, state[:8] + [t+1,]))
         else:
-            worlds.append((nresources, nrobots, t+1, next_robot))
+            worlds.append(state[:8] + [t+1,next_robot])
 
     return max_geodes
 
