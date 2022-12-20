@@ -1,6 +1,3 @@
-from collections import defaultdict
-
-import copy
 import re
 
 pattern = re.compile('Each (\w+) robot costs ([\d\w\s]+)\.')
