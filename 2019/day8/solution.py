@@ -29,14 +29,36 @@ def part1(filename, w, h):
     print(f'P1 {filename}: {ans}')
 
 
-def part2(filename):
+def blend(top, bottom):
+    if top != 2:
+        return top
+    return bottom
+
+
+def pixel(layers, x, y, w, h):
+    return functools.reduce(blend, [i[x+y*w] for i in layers])
+
+
+def printimg(img, w, h):
+    for y in range(h):
+        for x in range(w):
+            pixel = img[x+y*w]
+            if pixel == 0:
+                pixel = ' '
+            else:
+                pixel = '■'
+            print(pixel,end='')
+        print()
+
+def part2(filename, w, h):
     input = parse_file(filename)
-    ans = 0
-    print(f'P2 {filename}: {ans}')
+    layers = [input[l*w*h:(l+1)*w*h] for l in range(len(input)//(w*h))]
+    img = [pixel(layers, i%w,i//w, w,h) for i in range(w*h)]
+    printimg(img, w,h)
 
 
-part1('example.txt', 3, 2)
-part1('input.txt', 25,6)
+# part1('example.txt', 3, 2)
+# part1('input.txt', 25,6)
 
-# part2('example.txt')
-# part2('input.txt')
+# part2('example2.txt', 2, 2)
+part2('input.txt', 25,6)
