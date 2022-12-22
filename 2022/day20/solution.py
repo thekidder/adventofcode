@@ -8,7 +8,8 @@ def solve(filename, iterations, key):
     input = parse_file(filename, key)
     indices = list(range(len(input)))
     
-    for _ in range(iterations):
+    print(f'Initial arrangement:\n{input}')
+    for i in range(iterations):
         for x in range(len(input)):
             ind = indices.index(x)
             val = input.pop(ind)
@@ -23,6 +24,9 @@ def solve(filename, iterations, key):
 
             indices.pop(ind)
             indices.insert(next_ind, x)
+        print(f'After {i+1} round of mixing:\n{input}')
+        print(indices)
+
     
     ind = input.index(0)
     ans = input[(ind + 1000) % len(input)] + \
@@ -32,7 +36,7 @@ def solve(filename, iterations, key):
 
 
 # solve('example.txt', 1, 1)
-solve('input.txt', 1, 1)
+# solve('input.txt', 1, 1)
 
-# solve('example.txt', 10, 811589153)
-solve('input.txt', 10, 811589153)
+solve('example.txt', 10, 811589153)
+# solve('input.txt', 10, 811589153)
