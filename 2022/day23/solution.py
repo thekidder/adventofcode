@@ -1,136 +1,84 @@
-from collections import defaultdict, Counter
+from collections import defaultdict
 
 import functools
-import itertools
-import math
-import re
-import sys
+import operator
 
-from helpers import *
+adjacencies = [(x,y) for x in range(-1,2) for y in range(-1,2) if y != 0 or x != 0]
 
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
+def vadd(a, b):
+    return tuple(map(operator.add, a, b))
+
 
 def parse_file(filename):
-    r = defaultdict(bool)
+    m = set()
     with open(filename, 'r') as f:
         lines = f.readlines()
         for y,line in enumerate(lines):
-            for x,c in enumerate(line):
-                if c == '#':
-                    r[(x,y)] = True
-        return r
+            m.update(map(lambda x: (x,y,), [x for x,c in enumerate(line) if c == '#']))
+        return m
 
 
-dirs = [
-    (0, -1),
-    (0, 1),
-    (-1, 0),
-    (1, 0),
-]
-
-def adjacent(r, pos):
-    for x in range(-1, 2):
-        for y in range(-1,2):
-            if x == 0 and y == 0: continue
-            npos = vadd(pos, (x,y))
-            if npos in r and r[npos]: return True
+def adjacent(m, pos):
+    for x,y in adjacencies:
+        npos = vadd(pos, (x,y))
+        if npos in m: return True
     return False
 
 
-def can_move(r, pos, dir):
+def can_move(m, pos, dir):
     if dir[1] != 0:
-        return not any([vadd(pos, (x, dir[1])) in r and r[vadd(pos, (x, dir[1]))] for x in range(-1, 2)])
-    return not any([vadd(pos, (dir[0], y)) in r and r[vadd(pos, (dir[0], y))] for y in range(-1, 2)])
-
-
-def printmap(m):
-    print('STATE:')
-    minb = [sys.maxsize, sys.maxsize]
-    maxb = [0, 0]
-    for space,elf in m.items():
-        if not elf: continue
-        minb[0] = min(minb[0], space[0])
-        minb[1] = min(minb[1], space[1])
-
-        maxb[0] = max(maxb[0], space[0])
-        maxb[1] = max(maxb[1], space[1])
-    
-    for y in range(minb[1], maxb[1]+1):
-        for x in range(minb[0], maxb[0]+1):
-            if (x,y) in m and m[(x,y)]:
-                print('#',end='')
-            else:
-                print('.',end='')
-        print()
+        return all([vadd(pos, (x, dir[1])) not in m for x in range(-1, 2)])
+    return all([vadd(pos, (dir[0], y)) not in m for y in range(-1, 2)])
  
 
-def part1(filename):
-    m = parse_file(filename)
-    for round in range(10000):
+def get_move(m, coord, dirs):
+    if adjacent(m, coord):
+        for d in dirs:
+            if can_move(m, coord, d):
+                return vadd(coord, d)
+    return coord
+
+
+def sim(m, rounds):
+    dirs = [
+        (0, -1),
+        (0, 1),
+        (-1, 0),
+        (1, 0),
+    ]
+
+    for round in range(rounds):
         proposals = defaultdict(int)
         actions = {}
-        # printmap(m)
-        for space,elf in m.items():
-            if not elf: continue
-            if not adjacent(m, space):
-                actions[space] = space
-            else:
-                for d in dirs:
-                    if can_move(m, space, d):
-                        next = vadd(space, d)
-                        # print(f'{space} MOVES {d} TO {next}')
-                        actions[space] = next
-                        proposals[next] += 1
-                        break
-                else:
-                    actions[space] = space
-                    # print(f'{space} CANT MOVE {d}')
+        for space in m:
+            actions[space] = get_move(m, space, dirs)
+            if actions[space] != space:
+                proposals[actions[space]] += 1
 
-        n = defaultdict(bool)
-        has_moves = False
-        for prev,next in actions.items():
-            if prev == next or proposals[next] > 1:
-                n[prev] = True
-            else:
-                has_moves = True
-                n[next] = True
+        n = set([prev if prev == next or proposals[next] > 1 else next for prev,next in actions.items()])
 
-        if not has_moves:
-            print(f'ENDED AT ROUND {round+1}')
-            sys.exit(1)
+        if all(map(lambda x: x>1, proposals.values())):
+            break
         m = n
 
-        d = dirs.pop(0)
-        dirs.append(d)
-
-    elves = 0
-    minb = [sys.maxsize, sys.maxsize]
-    maxb = [0, 0]
-    for space,elf in m.items():
-        if not elf: continue
-        elves += 1
-        minb[0] = min(minb[0], space[0])
-        minb[1] = min(minb[1], space[1])
-
-        maxb[0] = max(maxb[0], space[0])
-        maxb[1] = max(maxb[1], space[1])
-
-    ans = (maxb[0] - minb[0]+1) * (maxb[1] - minb[1]+1) - elves
-
-    print(f'P1 {filename}: {maxb} {minb} {ans}')
+        dirs.append(dirs.pop(0))
+    return m, round+1
 
 
-def part2(filename):
-    input = parse_file(filename)
-    ans = 0
-    print(f'P2 {filename}: {ans}')
+def solve(filename, rounds):
+    m = parse_file(filename)
+    m, total_rounds = sim(m, rounds)
+
+    minb = list(functools.reduce(lambda a,b: map(min, a, b), m))
+    maxb = list(functools.reduce(lambda a,b: map(max, a, b), m))
+
+    ans = (maxb[0] - minb[0] + 1) * (maxb[1] - minb[1] + 1) - len(m)
+
+    print(f'Sim {filename} for {total_rounds} rounds: {ans}')
 
 
-# part1('example.txt')
-part1('input.txt')
+solve('example.txt', 10)
+solve('input.txt', 10)
 
-# part2('example.txt')
-# part2('input.txt')
+solve('example.txt', 1000)
+solve('input.txt', 1000)
