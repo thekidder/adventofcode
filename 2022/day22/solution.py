@@ -195,7 +195,7 @@ neighbors_example = {
 
 neighbors_input = {
     # in order of edge directions:
-    # edge start coord, edge span, rotation -> edge start coord, edge dir, relative rotation
+    # edge start coord, edge span, rotation -> edge start coord, edge span, rotation
     (50,   0,  49, 0,   3):  (0,  150,  0, 49,   2), # A -> J
     (100,  0,  49, 0,   3):  (0,  199,  49, 0,   1), # B -> I
     (149,  0,  0, 49,   0):  (99, 149,  0, -49,  0), # C -> F
