@@ -1,17 +1,20 @@
-from collections import defaultdict, Counter
+from collections import defaultdict
 
 import functools
-import itertools
-import math
-import re
-import sys
+import operator
 
-from helpers import *
+dirs = {
+    '<': (-1, 0),
+    '>': (1, 0),
+    'v': (0, 1),
+    '^': (0, -1),
+}
 
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
+to_dirs = {v:k for k,v in dirs.items()}
+
+def vadd(a, b):
+    return tuple(map(operator.add, a, b))
+
 
 def parse_file(filename):
     m = defaultdict(list)
@@ -30,14 +33,8 @@ def parse_file(filename):
 
         bounds = list(functools.reduce(lambda a,b: map(max, a, b), m.keys()))
 
-        start = None
-        end = None
-        for x in range(bounds[0]+1):
-            if m[(x, 0)] == []:
-                start = (x,0)
-            if m[(x, bounds[1])] == []:
-                end = (x, bounds[1])
-
+        start = (next(filter(lambda x: m[(x, 0)] == [], range(bounds[0]+1))), 0)
+        end = (next(filter(lambda x: m[(x, bounds[1])] == [], range(bounds[0]+1))), bounds[1])
 
         return m, bounds, start, end
 
@@ -93,40 +90,27 @@ def printmap(m, bounds):
             print(c, end='')
         print()
 
-def part1(filename):
+
+def solve(filename):
     m, bounds, start, end = parse_file(filename)
     states = set([start])
     time = 0
     goals = [end, start, end]
     while len(goals):
-        # printmap(m,bounds)
-        # print(f'{len(states)} states at time {time}: {states}')
         m = sim(m, bounds)
         t = set()
         for s in states:
             t.update(moves(m, s))
         states = t
         time += 1
-        # if time == 20:
-        #     sys.exit(1)
         if goals[0] in states:
-            print(f'{goals[0]} at {time}')
+            print(f'{filename}: reached {goals[0]} at {time}')
             g = goals.pop(0)
             states = set([g])
             
+    print(f'{filename}: finished at {time}')
 
-    print(f'P1 {filename}: {time}')
 
-
-def part2(filename):
-    input = parse_file(filename)
-    ans = 0
-    print(f'P2 {filename}: {ans}')
-
-# part1('simple.txt')
-
-# part1('example.txt')
-part1('input.txt')
-
-# part2('example.txt')
-# part2('input.txt')
+# solve('simple.txt')
+# solve('example.txt')
+solve('input.txt')
