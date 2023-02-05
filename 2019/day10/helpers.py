@@ -24,6 +24,10 @@ def vmul(a, b):
 def mhn_dist(a, b):
     return sum(map(abs, vsub(a, b)))
 
+
+def dist_sqr(a, b):
+    return sum(map(lambda x: x*x, vsub(a, b)))
+
 # dirs = {
 #     'W': (-1, 0),
 #     'E': (1, 0),
