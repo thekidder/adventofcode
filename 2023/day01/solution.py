@@ -6,8 +6,6 @@ def part1(filename):
             ans += int(nums[0] + nums[-1])
     print(f'P1 {filename}: {ans}')
 
-words = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
-
 def part2(filename):
     ans = 0
     with open(filename, 'r') as f:
