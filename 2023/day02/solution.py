@@ -31,12 +31,6 @@ def parse_file(filename):
             games.append(game)
 
         return games
-    # lines = []
-    # with open(filename, 'r') as f:
-    #     for line in f:
-    #         lines.append(int(line))
-
-    # return lines
 
 
 def part1(filename):
@@ -53,6 +47,7 @@ cubes = {
     'green': 13,
     'blue': 14
 }
+
 
 def possible(game):
     for s in game:
@@ -72,9 +67,7 @@ def power(game):
 
 def part2(filename):
     games = parse_file(filename)
-    ans = 0
-    for (i, game) in enumerate(games):
-        ans += power(game)
+    ans = functools.reduce(operator.add, map(power, games))
     print(f'P2 {filename}: {ans}')
 
 
