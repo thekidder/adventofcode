@@ -1,34 +1,19 @@
-from collections import defaultdict, Counter
+from collections import defaultdict
 
 import functools
-import itertools
-import math
+import operator
 import re
-import sys
 
-from helpers import *
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
+pattern = re.compile('(\d+) (\w+)')
 
 def parse_file(filename):
     games = []
     with open(filename, 'r') as f:
         for l in f:
-            game = []
-            (_, cubes) = l.split(':')
-            sets = cubes.split(';')
-            for s in sets:
-                ss = []
-                batches = s.split(',')
-                for b in batches:
-                    (num, color) = b.strip().split(' ')
-                    bb = (int(num), color.strip())
-                    ss.append(bb)
-                game.append(ss)
-            games.append(game)
+            colmax = defaultdict(int)
+            for m in pattern.findall(l):
+                colmax[m[1]] = max(int(m[0]), colmax[m[1]])
+            games.append(colmax)
 
         return games
 
@@ -41,27 +26,23 @@ def part1(filename):
             ans += i + 1
     print(f'P1 {filename}: {ans}')
 
-
 cubes = {
     'red': 12,
     'green': 13,
     'blue': 14
 }
 
-
 def possible(game):
-    for s in game:
-        for c in s:
-            if cubes[c[1]] < c[0]:
-                return False 
+    for color,num in game.items():
+        if num > cubes[color]:
+            return False 
     return True
 
 
 def power(game):
     least = defaultdict(int)
-    for s in game:
-        for c in s:
-            least[c[1]] = max(least[c[1]], c[0])
+    for color,num in game.items():
+        least[color] = max(least[color], num)
     return functools.reduce(operator.mul, least.values(), 1)
 
 
