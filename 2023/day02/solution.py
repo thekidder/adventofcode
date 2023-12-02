@@ -63,16 +63,11 @@ def possible(game):
 
 
 def power(game):
-    l = {
-        'red': 0,
-        'green': 0,
-        'blue': 0
-    }
+    least = defaultdict(int)
     for s in game:
         for c in s:
-            if c[0] > l[c[1]]:
-                l[c[1]] = c[0]
-    return l['red']*l['blue']*l['green']
+            least[c[1]] = max(least[c[1]], c[0])
+    return functools.reduce(operator.mul, least.values(), 1)
 
 
 def part2(filename):
@@ -83,8 +78,8 @@ def part2(filename):
     print(f'P2 {filename}: {ans}')
 
 
-# part1('example.txt')
-# part1('input.txt')
+part1('example.txt')
+part1('input.txt')
 
 part2('example.txt')
 part2('input.txt')
