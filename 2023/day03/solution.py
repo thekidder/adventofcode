@@ -1,18 +1,4 @@
-from collections import defaultdict, Counter
-
-import functools
-import itertools
-import math
-import re
-import sys
-
-from helpers import *
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
-
+from collections import defaultdict
 def parse_file(filename):
     r = {}
     with open(filename, 'r') as f:
@@ -20,14 +6,7 @@ def parse_file(filename):
             for (x, c) in enumerate(l.strip()):
                 r[(x,y)] = c
 
-
         return r
-    # lines = []
-    # with open(filename, 'r') as f:
-    #     for line in f:
-    #         lines.append(int(line))
-
-    # return lines
 
 
 def neighbors(coord):
@@ -40,6 +19,7 @@ def neighbors(coord):
 
 def symbol(x):
     return not x.isdigit() and x != '.'
+
 
 def part1(filename):
     input = parse_file(filename)
@@ -67,8 +47,6 @@ def part1(filename):
             num += input[next]
             next = (next[0]+1, coord[1])
         ans += int(num)
-        # print(coord, num)
-
 
     print(f'P1 {filename}: {ans}')
 
