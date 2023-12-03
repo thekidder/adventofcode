@@ -5,6 +5,16 @@ def file(name):
         return f.read()
 
 
+def parse_grid(filename):
+    r = {}
+    with open(filename, 'r') as f:
+        for (y, l) in enumerate(f):
+            for (x, c) in enumerate(l.strip()):
+                r[(x,y)] = c
+
+        return r
+
+
 def sign(n):
     return (n > 0) - (n < 0)
 
