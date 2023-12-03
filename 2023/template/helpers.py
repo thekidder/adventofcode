@@ -15,6 +15,14 @@ def parse_grid(filename):
         return r
 
 
+def neighbors(coord):
+    for xd in range(-1, 2):
+        for yd in range(-1, 2):
+            if xd == 0 and yd == 0:
+                continue
+            yield (coord[0] + xd, coord[1] + yd)
+
+
 def sign(n):
     return (n > 0) - (n < 0)
 
