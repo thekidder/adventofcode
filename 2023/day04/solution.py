@@ -28,10 +28,9 @@ def part2(filename):
     copies_per_index = defaultdict(int)
     for i, g in enumerate(input):
         copies_per_index[i] += 1
-        for _ in range(copies_per_index[i]):
-            ncopies = len(g[0] & g[1])
-            for j in range(ncopies):
-                copies_per_index[i+j+1] += 1
+        ncopies = len(g[0] & g[1])
+        for j in range(ncopies):
+            copies_per_index[i+j+1] += copies_per_index[i]
 
     ans = sum(copies_per_index.values())
 
