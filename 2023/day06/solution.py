@@ -11,10 +11,20 @@ def parse_file(filename):
 
 def num_wins(time, dist):
     wins = 0
+
+    first_index = 0
+    last_index = time
     for i in range(1, time-1):
         if i * (time - i) > dist:
-            wins += 1
-    return wins
+            first_index = i
+            break
+
+    for i in range(time-1, 0, -1):
+        if i * (time - i) > dist:
+            last_index = i
+            break
+            
+    return last_index - first_index + 1
 
 
 def solve(filename):
