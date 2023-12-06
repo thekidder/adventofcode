@@ -24,11 +24,11 @@ def solve(filename):
     for i in range(len(times)):
         ans *= num_wins(times[i], dists[i])
 
-    print(f'P1 {filename}: {ans}')
+    print(f'solve {filename}: {ans}')
 
 
 solve('example.txt')
 solve('input.txt')
 
 solve('example2.txt')
-pasolvert1('input2.txt')
+solve('input2.txt')
