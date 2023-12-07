@@ -1,3 +1,5 @@
+import math
+
 def parse_file(filename):
     with open(filename, 'r') as f:
         lines = f.read().split('\n')
@@ -7,6 +9,25 @@ def parse_file(filename):
         dists = list(map(int, dists.split()))
 
         return times, dists
+
+
+# i * (time - i) = dist
+# i*time - i^2 = dist
+
+# -i^2 + time*i - dist = 0
+
+# (-time+-sqrt(time^2-4*dist))/-2
+
+# Time:      71530
+# Distance:  940200
+
+time = 53897698
+dist = 313109012141201
+
+root1 = math.floor((time-math.sqrt(time**2-4*dist))/2)
+root2 = math.floor((time+math.sqrt(time**2-4*dist))/2)
+
+print(root2 - root1)
 
 
 def num_wins(time, dist):
