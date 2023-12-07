@@ -11,37 +11,8 @@ def parse_file(filename):
     return lines
 
 
-val = {
-    'A': 12, 
-    'K': 11, 
-    'Q': 10, 
-    'J': 9, 
-    'T': 8, 
-    '9': 7, 
-    '8': 6, 
-    '7': 5, 
-    '6': 4, 
-    '5': 3, 
-    '4': 2, 
-    '3': 1,
-    '2': 0
-}
-
-val_j = {
-    'A': 12, 
-    'K': 11, 
-    'Q': 10, 
-    'T': 9, 
-    '9': 8, 
-    '8': 7, 
-    '7': 6, 
-    '6': 5, 
-    '5': 4, 
-    '4': 3, 
-    '3': 2,
-    '2': 1,
-    'J': 0 
-}
+val = dict([(c, i) for i, c in enumerate(['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'])])
+val_j = dict([(c, i) for i, c in enumerate(['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A'])])
 
 
 def ords(hand, wildj = False):
@@ -92,26 +63,17 @@ def hand_key(hand, wildj):
     return v
 
 
-def part1(filename):
+def solve(filename, wildj):
     input = parse_file(filename)
-    input = sorted(input, key = lambda h: hand_key(h, False))
+    input = sorted(input, key = lambda h: hand_key(h, wildj))
     ans = 0
     for i, h in enumerate(input):
         ans += (i+1) * h[1]
-    print(f'P1 {filename}: {ans}')
+    print(f'Js are wild? {wildj} {filename}: {ans}')
 
 
-def part2(filename):
-    input = parse_file(filename)
-    input = sorted(input, key = lambda h: hand_key(h, True))
-    ans = 0
-    for i, h in enumerate(input):
-        ans += (i+1) * h[1]
-    print(f'P1 {filename}: {ans}')
+solve('example.txt', False)
+solve('input.txt', False)
 
-
-part1('example.txt')
-part1('input.txt')
-
-part2('example.txt')
-part2('input.txt')
+solve('example.txt', True)
+solve('input.txt', True)
