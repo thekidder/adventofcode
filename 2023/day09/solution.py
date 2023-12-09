@@ -1,17 +1,4 @@
-from collections import defaultdict, Counter
-
-import functools
-import itertools
-import math
-import re
-import sys
-
-from helpers import *
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
+import operator
 
 def parse_file(filename):
     lines = []
@@ -22,15 +9,20 @@ def parse_file(filename):
     return lines
 
 
-def predict(history):
+def build_stacks(history):
     stacks = [history]
     while not all(map(lambda x: x == 0, stacks[-1])):
         curr = stacks[-1]
         diffs = [x - y for x, y in zip(curr[1:], curr[:-1])]
         stacks.append(diffs)
+    return stacks
+
+
+def predict(history, op = operator.add, ind = -1):
+    stacks = build_stacks(history)
     next = 0
     for stack in reversed(stacks):
-        next = stack[-1] + next
+        next = op(stack[ind], next)
     return next
 
 
@@ -40,25 +32,9 @@ def part1(filename):
     print(f'P1 {filename}: {ans}')
 
 
-def predict_back(history):
-    stacks = [history]
-    while not all(map(lambda x: x == 0, stacks[-1])):
-        curr = stacks[-1]
-        diffs = [x - y for x, y in zip(curr[1:], curr[:-1])]
-        stacks.append(diffs)
-    next = 0
-    for stack in reversed(stacks):
-        next = stack[0] - next
-
-    # stack[0] - next = prev
-    # next + prev = stack[0]
-    # next = stack
-    return next
-
-
 def part2(filename):
     input = parse_file(filename)
-    ans = sum(map(predict_back, input))
+    ans = sum(map(lambda h: predict(h, operator.sub, 0), input))
     print(f'P2 {filename}: {ans}')
 
 
