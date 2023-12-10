@@ -12,9 +12,7 @@ def parse_file(filename):
 def build_stacks(history):
     stacks = [history]
     while not all(map(lambda x: x == 0, stacks[-1])):
-        curr = stacks[-1]
-        diffs = [x - y for x, y in zip(curr[1:], curr[:-1])]
-        stacks.append(diffs)
+        stacks.append([x - y for x, y in zip(stacks[-1][1:], stacks[-1][:-1])])
     return stacks
 
 
