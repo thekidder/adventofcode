@@ -42,9 +42,9 @@ def vmul(a, b):
 def mhn_dist(a, b):
     return sum(map(abs, vsub(a, b)))
 
-# dirs = {
-#     'W': (-1, 0),
-#     'E': (1, 0),
-#     'S': (0, -1),
-#     'N': (0, 1),
-# }
+dirs = {
+    'W': (-1, 0),
+    'E': (1, 0),
+    'S': (0, 1),
+    'N': (0, -1),
+}
