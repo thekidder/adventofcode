@@ -5,7 +5,6 @@ def parse_file(filename):
     with open(filename, 'r') as f:
         for line in f:
             lines.append(list(map(int, line.split())))
-
     return lines
 
 
