@@ -17,23 +17,17 @@ def num_matches(input):
     p,c = input
     if len(c) == 0:
         return 1 if '#' not in p else 0
-        
     if len(p) == 0:
         return 0
 
     need = c[0]
     next_damage = maybe_damage.match(p).span()[1]
-    
     r = 0
-
     if p[0] != '#':
         r += num_matches((p[1:], c))
-
-    if next_damage >= need:
-        if len(p) == need or p[need] != '#':
-            r += num_matches((p[need+1:], c[1:]))
+    if next_damage >= need and (len(p) == need or p[need] != '#'):
+        r += num_matches((p[need+1:], c[1:]))
     return r
-
 
 
 def solve(filename, expand = False):
