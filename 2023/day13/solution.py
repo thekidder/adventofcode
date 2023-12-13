@@ -1,3 +1,5 @@
+from functools import partial
+
 def parse_grid(text):
     r = {}
     mx = 0
@@ -39,7 +41,7 @@ def is_mirror_row(grid,mx,my,row,nfaults=0):
     return faults == nfaults
 
 
-def pattern(input, nfaults):
+def pattern(input, nfaults=0):
     grid,mx,my = input
     for col in range(1, mx+1):
         if is_mirror_col(grid,mx,my,col,nfaults):
@@ -49,13 +51,14 @@ def pattern(input, nfaults):
             return row * 100
     return 0
 
+
 def solve(filename):
     input = parse_file(filename)
-    ans = sum(map(lambda i: pattern(i, 0), input))
+    ans = sum(map(pattern, input))
     print(f'P1 {filename}: {ans}')
 
-    ans = sum(map(lambda i: pattern(i, 1), input))
-    print(f'P1 {filename}: {ans}')
+    ans = sum(map(partial(pattern, nfaults = 1), input))
+    print(f'P2 {filename}: {ans}')
 
 
 solve('example.txt')
