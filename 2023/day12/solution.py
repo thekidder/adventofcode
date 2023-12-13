@@ -147,6 +147,7 @@ def expand_constraints(i):
 
 wild = re.compile('^[\?]+')
 damage = re.compile('^[\#]+')
+maybedamage = re.compile('^[\#\?]+')
 
 
 def prefixlen(pattern, str):
@@ -156,95 +157,54 @@ def prefixlen(pattern, str):
     return len(m.group(0))
 
 
-def matches2(pattern, constraints):
-    r = 0
-    permutations = [(pattern, constraints, 1)]
-    # pattern = pattern.replace('.', ' ')
-    # groups = pattern.split()
-    
-    cntr = 0
-    while len(permutations) > 0:
-        if cntr % 100000 == 0:
-            print(len(permutations), cntr, permutations[-1][0], permutations[-1][1])
-        cntr += 1
-        p, c, n = permutations.pop()#0)
-
-        if len(p) == 0 and len(c) == 0:
-            r += n
-            continue
-
-        if len(c) == 0:
-            continue
-
-        if p[0] == '.':
-            permutations.append((p[1:], c, n))
-            continue
-
-        need = c[0]
-        nwild = prefixlen(wild, p)
-        ndamage = prefixlen(damage, p)
-
-        # print(p,c,n,nwild,need,  len(permutations))
-
-        if ndamage > 0 and ndamage > need:
-            continue
-        if nwild > need:
-            for i in range(need, nwild+1):
-                permutations.append((p[i:],c, n))
-                if len(p) == nwild or p[nwild] == '.':
-                    permutations.append((p[i:],c[1:], n * (i - need + 1)))
-                else:
-                    if i > need and i < nwild - 1:
-                        permutations.append((p[i:],c[1:], n * (i - need)))
-        elif nwild == need:
-            if nwild == 0:
-                sys.exit(0)
-            permutations.append((p[nwild:],c, n))
-            if p[nwild] == '.':
-                permutations.append((p[nwild:],c[1:], n))
-            # else:
-                # print(f'got {p} {c}, can\'t proceed')
-                # sys.exit(0)
-        elif nwild > 0:
-            permutations.append((p[nwild:],c, n))
-            next_damage = prefixlen(damage, p[nwild:])
-            next_wild = prefixlen(wild, p[nwild+next_damage:])
-            # print(nwild, next_damage, next_wild, need)
-            need -= nwild + next_damage
-            if next_wild > need:
-                permutations.append((p[nwild+next_damage+need+1:],c[1:], n))
-            elif next_wild == need and p[nwild+next_damage+need] == '.':
-                if nwild+next_damage+need == 0:
-                    sys.exit(0)
-
-                permutations.append((p[nwild+next_damage+need:],c[1:], n))
-            # else:
-            #     print(f'can\'t do {p} {c}')
-            #     sys.exit(0)
-        else:
-            next_damage = prefixlen(damage, p)
-            need -= next_damage
-            if need == 0 and len(p) == next_damage or p[next_damage] != '#':
-                permutations.append((p[next_damage+1:],c[1:], n))
-            else:
-                print(f'damage: can\'t do {p} {c} {need}')
-                sys.exit(0)
-
-        # else:
-        #     print(f'got {p}, can\'t proceed')
-        #     sys.exit(0)
+def matches3(pattern, constraints):
+    r = matches2(pattern, constraints)
+    # if r > 0:
+    #     print(pattern, constraints, r)
     return r
+
+
+@functools.cache
+def matches2(p, c):
+    if len(p) == 0 and len(c) == 0:
+        return 1
+
+    if len(p) > 0 and p[0] == '.':
+        return matches3(p[1:], c)
+
+    if len(c) == 0:
+        if '#' not in p:
+            return 1
+        else:
+            return 0
+        
+    if len(p) == 0:
+        return 0
+
+    need = c[0]
+    next_damage = prefixlen(maybedamage, p)
+    
+    r = 0
+
+    if p[0] == '?':
+        r += matches3(p[1:], c)
+
+    if next_damage >= need:
+        if len(p) == need or p[need] != '#':
+            r += matches3(p[need+1:], c[1:])
+    return r
+
 
 
 def part2(filename):
     input = parse_file(filename)
     for i in range(len(input)):
         input[i] = (expand_input(input[i][0]), expand_constraints(input[i][1]))
-    input = [input[1]]
+    # input = [input[1]]
     ans = 0
     for i,(t,c) in enumerate(input):
-        # print(t)
-        n = matches2(t, c)
+        # print(t,c, ':START')
+        n = matches3(t, tuple(c))
 
         print(f'[{i}] {t} :: {c} -> {n}')
 
@@ -256,5 +216,23 @@ def part2(filename):
 # not 5654
 # part1('input.txt')
 
-part2('example.txt')
-# part2('input.txt')
+# matches3('???.###', (1, 1, 3))
+# matches3('?.??..??...?##.', (1, 1, 3))
+# matches3('??..??...?##', (1, 3))
+
+# print(matches3('.??..??...?##.?.??..??...?##.?.??..??...?##.?.??..??...?##.?.??..??...?##.', (1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3, 1, 1, 3)))
+# print(matches3('?#?#?#?#?#?#?#???#?#?#?#?#?#?#???#?#?#?#?#?#?#???#?#?#?#?#?#?#???#?#?#?#?#?#?#?', (1, 3, 1, 6, 1, 3, 1, 6, 1, 3, 1, 6, 1, 3, 1, 6, 1, 3, 1, 6)))
+# print(matches3('?#?#?#?#?', (1, 6)))
+# print(matches3('????.#...#...?????.#...#...?????.#...#...?????.#...#...?????.#...#...', (4, 1, 1, 4, 1, 1, 4, 1, 1, 4, 1, 1, 4, 1, 1)))
+# print(matches3('????.######..#####.?????.######..#####.?????.######..#####.?????.######..#####.?????.######..#####.', (1, 6, 5, 1, 6, 5, 1, 6, 5, 1, 6, 5, 1, 6, 5)))
+# print(matches3('???.######..#####', (1, 6, 5)))
+# print(matches3('?###??????????###??????????###??????????###??????????###????????', (3, 2, 1, 3, 2, 1, 3, 2, 1, 3, 2, 1, 3, 2, 1)))
+# print(matches3('?###????????', (3, 2, 1)))
+# print(matches3('?????', ( 1,1)))
+
+# print(matches3('??#??????#..????????#??????#..????????#??????#..????????#??????#..????????#??????#..?????', (9, 2, 1, 9, 2, 1, 9, 2, 1, 9, 2, 1, 9, 2, 1))) # maybe -> 3888
+
+# part2('example.txt')
+# not 20397109448443 (too high)
+# not 16171657110006 (too high)
+part2('input.txt')
