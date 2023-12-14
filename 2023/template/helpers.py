@@ -26,6 +26,13 @@ def print_grid(m, mx, my):
         print()
 
 
+def transpose(m):
+    r = {}
+    for (x,y), v in m.items():
+        r[(y,x)] = v
+    return r
+
+
 def neighbors(coord):
     for xd in range(-1, 2):
         for yd in range(-1, 2):
