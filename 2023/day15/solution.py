@@ -25,20 +25,19 @@ def part1(filename):
     print(f'P1 {filename}: {ans}')
 
 
-pattern = re.compile('^(\w+)')
+pattern = re.compile('^(\w+)([=-])(\d*)')
 
 def part2(filename):
     input = parse_file(filename)
     data = defaultdict(list)
     for i in input:
-        label_len = pattern.match(i).span()[1]
+        m = pattern.match(i)
 
-        op = i[:label_len]
-        label = i[:label_len]
+        label = m.group(1)
         box = hash(label)
-        op = i[label_len]
+        op = m.group(2)
         if op == '=':
-            focal = int(i[label_len+1:])
+            focal = int(m.group(3))
             found = False
             for i, (l,f) in enumerate(data[box]):
                 if l == label:
