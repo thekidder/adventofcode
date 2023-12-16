@@ -19,23 +19,21 @@ def paint(code, squares):
     while True:
         try:
             color = next(prog)
-
             squares[coord] = color
-
             turn = next(prog)
-
             if turn == 0:
                 dir = turn_left(dir)
             else:
                 dir = turn_right(dir)
-
             coord = vadd(coord, dirs[dir])
             steps += 1
+
             # print_grid(squares)
             # print(f'{color}, {turn} :: {coord}, {dir}, {len(squares.keys())}')
             # print()
         except StopIteration:
             break
+
 
 def part1(filename):
     code = parse(file(filename))
@@ -56,5 +54,4 @@ def part2(filename):
 
 
 part1('input.txt')
-
 part2('input.txt')
