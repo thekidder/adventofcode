@@ -3,16 +3,6 @@ from collections import defaultdict
 from helpers import *
 
 
-def turn_left(dir):
-    ind = turns.index(dir)
-    return [turns[(ind - 1) % 4]]
-
-
-def turn_right(dir):
-    ind = turns.index(dir)
-    return [turns[(ind + 1) % 4]]
-
-
 def empty(dir): 
     return [dir]
 

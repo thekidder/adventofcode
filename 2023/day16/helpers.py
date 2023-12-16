@@ -34,3 +34,11 @@ dirs = {
 }
 
 turns = ['W', 'N', 'E', 'S']
+turn_lookup = dict(map(reversed, enumerate(turns)))
+
+def turn_left(dir):
+    return [turns[(turn_lookup[dir] - 1) % 4]]
+
+
+def turn_right(dir):
+    return [turns[(turn_lookup[dir] + 1) % 4]]

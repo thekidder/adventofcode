@@ -60,9 +60,22 @@ def vmul(a, b):
 def mhn_dist(a, b):
     return sum(map(abs, vsub(a, b)))
 
-# dirs = {
-#     'W': (-1, 0),
-#     'E': (1, 0),
-#     'S': (0, 1),
-#     'N': (0, -1),
-# }
+
+dirs = {
+    'W': (-1, 0),
+    'E': (1, 0),
+    'S': (0, 1),
+    'N': (0, -1),
+}
+
+
+turns = ['W', 'N', 'E', 'S']
+turn_lookup = dict(map(reversed, enumerate(turns)))
+
+
+def turn_left(dir):
+    return [turns[(turn_lookup[dir] - 1) % 4]]
+
+
+def turn_right(dir):
+    return [turns[(turn_lookup[dir] + 1) % 4]]
