@@ -28,21 +28,22 @@ def valid(coord,mx,my):
 
 
 def next(n,input,end,mx,my):
-    if n[4] < 3:
+    if n[4] < 10:
         dir = n[3]
         nc = vadd(dirs[dir], n[2])
         if valid(nc,mx,my):
             yield (n[1]+mhn_dist(nc, end), n[1]+input[nc], nc, n[3], n[4]+1, n[2])
 
-    dir = turn_left(n[3])
-    nc = vadd(dirs[dir], n[2])
-    if valid(nc,mx,my):
-        yield (n[1]+mhn_dist(nc, end), n[1]+input[nc], nc, dir, 1, n[2])
+    if n[4] >= 4:
+        dir = turn_left(n[3])
+        nc = vadd(dirs[dir], n[2])
+        if valid(nc,mx,my):
+            yield (n[1]+mhn_dist(nc, end), n[1]+input[nc], nc, dir, 1, n[2])
 
-    dir = turn_right(n[3])
-    nc = vadd(dirs[dir], n[2])
-    if valid(nc,mx,my):
-        yield (n[1]+mhn_dist(nc, end), n[1]+input[nc], nc, dir, 1, n[2])
+        dir = turn_right(n[3])
+        nc = vadd(dirs[dir], n[2])
+        if valid(nc,mx,my):
+            yield (n[1]+mhn_dist(nc, end), n[1]+input[nc], nc, dir, 1, n[2])
 
 
 def astar(input,mx,my):
