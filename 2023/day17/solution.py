@@ -1,22 +1,7 @@
-from collections import defaultdict, Counter
+from collections import defaultdict
 from queue import PriorityQueue
 
-import functools
-import itertools
-import math
-import re
-import sys
-
 from helpers import *
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
-
-
-# queue elements of form:
-# (est, cost, coord, dir, blocks_in_dir, prev)
 
 
 def valid(coord,mx,my):
@@ -47,6 +32,8 @@ def next(n,input,end,mx,my):
 
 
 def astar(input,mx,my):
+    # queue of elements of the form:
+    # (estimate, cost, coord, dir, blocks_travled_in_dir, prev_coord)
     q = PriorityQueue()
     start = (0,0)
     end = (mx,my)
@@ -58,6 +45,7 @@ def astar(input,mx,my):
         n = q.get()
         # print(n)
         if n[2] == end:
+            print(cnt)
             return n[1]
         for ne in next(n, input, end, mx, my):
             score_key = (ne[2], ne[3], ne[4])
@@ -81,7 +69,7 @@ def part2(filename):
     print(f'P2 {filename}: {ans}')
 
 
-part1('example.txt')
+# part1('example.txt')
 part1('input.txt')
 
 # part2('example.txt')
