@@ -32,11 +32,10 @@ def parse_file(filename):
                 partdesc[var[0]] = int(var[2:])
             pp.append(partdesc)
 
-
         return ww,pp
 
 
-def apply(name, workflow, part):
+def apply(workflow, part):
     for rule in workflow:
         if len(rule) == 1:
             return rule[0]
@@ -53,7 +52,7 @@ def part1(filename):
     for part in parts:
         workflow = 'in'
         while workflow != 'A' and workflow != 'R':
-            workflow = apply(workflow, workflows[workflow], part)
+            workflow = apply(workflows[workflow], part)
         if workflow == 'A':
             ans += part['x'] + part['m'] + part['a'] + part['s']
 
