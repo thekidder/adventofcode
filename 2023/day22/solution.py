@@ -78,16 +78,15 @@ def part1(filename):
 
     all_supports = set()
     dupe_supports = set()
+    single_supports = set()
     for b in input:
         all_supports.update(b[4])
-        if len(b[4]) > 1:
+        if len(b[4]) == 1:
+            single_supports.update(b[4])
+        elif len(b[4]) > 1:
             dupe_supports.update(b[4])
 
-    for b in input:
-        if len(b[4]) == 1 and list(b[4])[0] in dupe_supports:
-            dupe_supports.remove(list(b[4])[0])
-
-    ans = len(dupe_supports)
+    ans = len(dupe_supports - single_supports)
 
     for b in input:
         if (b[0], b[1]) not in all_supports:
