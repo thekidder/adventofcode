@@ -13,12 +13,7 @@ def parse_file(filename):
             a,b = line.split('~')
             a = coord(a)
             b = coord(b)
-            if a[2] > b[2]:
-                c = a
-                a = b
-                b = c
-
-            lines.append((a,b, False, i))
+            lines.append([a, b, False, i, None])
 
     return lines
 
@@ -28,13 +23,25 @@ def sortz(brick):
 
 
 def intersect(a,b):
-    for xa in range(a[0][0], a[1][0]+1):
-        for ya in range(a[0][1], a[1][1]+1):
-            for xb in range(b[0][0], b[1][0]+1):
-                for yb in range(b[0][1], b[1][1]+1):
-                    if xa == xb and ya == yb:
-                        return True
-    return False
+    ax = (a[0][0],a[1][0])
+    bx = (b[0][0],b[1][0])
+    if bx[0] < ax[0]:
+        ax,bx = bx,ax
+
+    ay = (a[0][1],a[1][1])
+    by = (b[0][1],b[1][1])
+    if by[0] < ay[0]:
+        ay,by = by,ay
+ 
+    return ax[1] >= bx[0] and ay[1] >= by[0]
+
+    # for xa in range(a[0][0], a[1][0]+1):
+    #     for ya in range(a[0][1], a[1][1]+1):
+    #         for xb in range(b[0][0], b[1][0]+1):
+    #             for yb in range(b[0][1], b[1][1]+1):
+    #                 if xa == xb and ya == yb:
+    #                     return True
+    # return False
 
 
 def resting(b, input):
@@ -56,14 +63,16 @@ def resting(b, input):
 def sim(input):
     falls = set()
     while not all(map(lambda b: b[2], input)):
-        for i,b in enumerate(input):
+        for b in input:
             if b[2]:
                 continue
             r, s = resting(b, input)
             if r:
-                input[i] = (b[0], b[1], True, b[3], s)
+                b[2] = True
+                b[4] = s
                 continue
-            input[i] = (vadd(b[0], (0,0,-1)), vadd(b[1], (0,0,-1)), False, b[3])
+            b[0] = vadd(b[0], (0,0,-1))
+            b[1] = vadd(b[1], (0,0,-1))
             falls.add(b[3])
         input.sort(key=sortz)
     return len(falls)
