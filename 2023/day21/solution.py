@@ -1,65 +1,24 @@
-from collections import defaultdict, Counter
-
-import functools
-import itertools
+import fractions
 import math
-import re
-import sys
 
 from helpers import *
 
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
 
-def parse_file(filename):
-    r = []
-    with open(filename, 'r') as f:
-        lines = f.read()
-        sections = lines.split('\n\n')
-
-        return r
-    # lines = []
-    # with open(filename, 'r') as f:
-    #     for line in f:
-    #         lines.append(int(line))
-
-    # return lines
-
+def is_plot(input,mx,my,c):
+    c_m = (c[0] % (mx+1), c[1] % (my+1))
+    return input[c_m] == '.'
 
 def step(input, mx,my,locs):
     n = set()
-    nm = set()
     for l in locs:
         for d in dirs.values():
             c = vadd(d, l)
-            c_m = (c[0] % (mx+1), c[1] % (my+1))
-            if input[c_m] == '.':
+            if is_plot(input, mx, my, c):
                 n.add(c)
-                nm.add(c_m)
-    return n,nm
+    return n
 
 
-def nlines(m):
-    miny = float('inf')
-    maxy = 0
-    for c in m:
-        miny = min(miny, c[1])
-        maxy = max(maxy, c[1])
-    return maxy-miny+1
-
-
-def grange(m):
-    miny = float('inf')
-    maxy = 0
-    for c in m:
-        miny = min(miny, c[1])
-        maxy = max(maxy, c[1])
-    return miny, maxy
-
-
-def part1(filename):
+def part1(filename, steps):
     input,mx,my = parse_grid(filename)
     for c,v in input.items():
         if v == 'S':
@@ -70,89 +29,22 @@ def part1(filename):
     # print(start)
 
     locs = set([start])
-    last = 0
-    dlast = 0
-    lines = 0
-
-    converged = False
-    last_len = 0
-
-    fngs = {}
-    cycle_len = 0
-    totals = []
-    patterns = []
-    fill_ratios = []
-    
-
-    for iter in range(20):
-        locs, locs_m = step(input, mx,my,locs)
-        curr = len(locs)
-        dcurr = curr-last
-        if len(locs_m) == last_len:
-            converged = True
-        last_len = len(locs_m)
-
-        if converged:
-            rows = []
-            mi,ma = grange(locs)
-            for _,y in enumerate(range(mi,ma+1)):
-                cnt = len(list(filter(lambda c:c[1] == y, locs)))
-                # print(f'{y},{iter}: {cnt}')
-                rows.append(cnt)
-            fng = tuple(rows[:6])
-            # print(fng)
-
-            if cycle_len == 0 and fng in fngs:
-                cycle_len = iter-fngs[fng]
-                print(f'{iter}: saw fingerprint at {fngs[fng]}; cycle {cycle_len}')
-            fngs[fng] = iter
-
-        if cycle_len != 0 and len(totals) < cycle_len*4:
-            fill_ratios.append(((len(locs)/(iter*2+1)**2+1)/2, len(locs), ((iter*2+1)**2+1)//2))
-            totals.append(tuple(rows))
-            pattern = []
-            for i in range(cycle_len*2):
-                p = ''
-                for j in range(cycle_len*2):
-                    y = -cycle_len + i + my // 2
-                    x = -cycle_len + j + mx // 2
-                    if (x,y) in locs:
-                        p +='#'
-                    else:
-                        p += '.'
-                pattern.append(p)
-
-            patterns.append(pattern)
-
-        print_grid(locs, start)
-        print()
-        # if cycle_len != 0 and len(totals) == cycle_len*4:
-        #     for f in fill_ratios:
-        #         print(f)
-            # for t in patterns:
-            #     for p in t:
-            #         print(p)
-            #     print()
-            # break
-
-        # if True:#cycle_len != 0: #and iter% cycle_len == 0:
-        #     print(iter+1)
-        #     print_grid(locs)
-            # print(len(rows))
-            # j = (ma - mi+1)//2
-            # y = mi + j
-            # # for j,y in enumerate(range(mi,ma+1)):
-            # cnt = len(list(filter(lambda c:c[1] == y, locs)))
-            # print(f'{y},{j}: {cnt}')
-
-        #     print(f'step {iter}: {curr} {len(locs_m)} {nlines(locs)} (+{dcurr}) (+{dcurr-dlast}) [{dcurr-nlines(locs)}]')
-            # print(fng)
-        last = curr
-        dlast = dcurr
+    for _ in range(steps):
+        locs = step(input, mx,my,locs)
 
     ans = len(locs)
     print(f'P1 {filename}: {ans}')
 
+
+def poly_lagrange(p, x, y):
+    a = (
+        fractions.Fraction(
+            math.prod(p - xj for xj in x if xj != xi),
+            math.prod(xi - xj for xj in x if xj != xi),
+        )
+        for xi in x
+    )
+    return sum(ai * yi for ai, yi in zip(a, y))
 
 def part2(filename):
     input,mx,my = parse_grid(filename)
@@ -163,19 +55,30 @@ def part2(filename):
     input[start] = '.'
     # print_grid(input,mx,my)
     # print(start)
-
-    locs = set([start])
     
-    for i in range(33):
-        locs, locs_m = step(input, mx,my,locs)
-        print_grid(locs)
-        print()
-    ans = 0
-    print(f'P2 {filename}: {ans}')
+    locs = set([start])
+    for _ in range(65):
+        locs = step(input, mx,my,locs)
+    a = len(locs)
+    print(a)
+    for _ in range(131):
+        locs = step(input, mx,my,locs)
+    b = len(locs)
+    print(b)
+    for _ in range(131):
+        locs = step(input, mx,my,locs)
+    c = len(locs)
+    print(c)
+
+    x = [65, 131+65, 131+131+65]
+    y =[a,b,c]
+    ans= poly_lagrange(26501365,x,y)
+
+    print(f'P2 {filename}: {ans} {int(ans)}')
 
 
-part1('example.txt')
-# part1('input.txt')
+# part1('example.txt', 6)
+# part1('input.txt', 64)
 
-# part2('example.txt')
-# part2('input.txt')
+# too low: 595147788145825
+part2('input.txt')
