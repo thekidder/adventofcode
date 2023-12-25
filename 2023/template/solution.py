@@ -102,6 +102,8 @@ def part2(filename):
 
     n = len(input)
 
+    num_constraints = 100
+
     def f(x):
         p = x[:3]
         v = x[3:6]
@@ -109,7 +111,7 @@ def part2(filename):
 
         # n_eqns = len(input) + 6 # 11 for example
         eqns = []
-        for i in range(len(input)): # 1 - 4
+        for i in range(num_constraints):#len(input)): # 1 - 4
             for j in range(3):
                 eqns.append(t[i]*input[i][1][j] + input[i][0][j] - (t[i]*v[j] + p[j]))
         # for i in x:
@@ -122,8 +124,8 @@ def part2(filename):
     bounds = (
         # [-np.inf, -np.inf, -np.inf, -1000, -1000, -1000] + [1] * n,
         # [np.inf, np.inf, np.inf, 1000, 1000, 1000] + [np.inf] * n,
-        [-4000000000000000] * 3 + [-1000000] * 3 + [0] * n,
-        [ 4000000000000000] * 3 + [1000000] * 3 + [10000000000] * n,
+        [-np.inf] * 3 + [-np.inf] * 3 + [1] * n,
+        [ np.inf] * 3 + [np.inf] * 3 + [np.inf] * n,
     )
     res = least_squares(f, guess, bounds=bounds,method='dogbox',jac='cs')
     print('STATUS', res.success, res.status)
@@ -134,8 +136,10 @@ def part2(filename):
     # print(list(map(int, roots)))
     ans = roots[0] + roots[1] + roots[2]
 
-    print(roots[0] + roots[3]*roots[6]) #prx + vrx * t1 
-    print(input[0][0][0] + input[0][1][0]*roots[6]) #p1x + v1x * t1 
+    for i in range(num_constraints):
+        print(roots[0] + roots[3]*roots[6+i],input[i][0][0] + input[i][1][0]*roots[6+i]) #prx + vrx * t1 
+        print(roots[1] + roots[4]*roots[6+i],input[i][0][1] + input[i][1][1]*roots[6+i]) #prx + vrx * t1 
+        print(roots[2] + roots[5]*roots[6+i],input[i][0][2] + input[i][1][2]*roots[6+i]) #prx + vrx * t1 
 
 
     # constraints = optimize.LinearConstraint(A=eqns, lb=0, ub=capacity)
@@ -150,8 +154,9 @@ def part2(filename):
 # part1('example.txt')
 # part1('input.txt')
 
-part2('example.txt')
+# part2('example.txt')
 # too high 836739974338902
 # too high 754362884530662
 # too high 754362884532830
+# not      578177720732788
 part2('input.txt')
