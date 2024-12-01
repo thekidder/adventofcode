@@ -49,13 +49,11 @@ def fast_pattern(pos, l, min_i, max_i):
 def fft(x, base):
     print(''.join(map(str, x[:8])))
     y = [0] * len(x)
-    for iter in range(100):
+    for _ in range(100):
         for i in range(len(x)):
             r = 0
-            for j in pattern(base, i, len(x)):
-                r += x[j]
-            # for a,b in zip(x, ):
-            #     r += a * b
+            for a,b in zip(x, pattern(base, i, len(x))):
+                r += a * b
             y[i] = abs(r) % 10
         x = y
         print(''.join(map(str, x[:8])))
@@ -109,8 +107,8 @@ def part2(filename):
     print(f'P2 {filename}: {ans}')
 
 
-part1('example.txt')
-# part1('input.txt')
+# part1('example.txt')
+part1('input.txt')
 
 # part2('example.txt')
 # part2('input.txt')
