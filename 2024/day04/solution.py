@@ -22,15 +22,20 @@ def part1(filename):
     print(f'P1 {filename}: {ans}')
 
 
+diagonals = [
+    (-1,-1),
+    ( 1,-1),
+    (-1, 1),
+    ( 1, 1),
+]
+
 def part2(filename):
     input,_,_ = parse_grid(filename)
     ans = 0
     for pos in input.keys():
         cnt = 0
-        cnt += find(input, 'MAS', vadd(pos, (-1,-1)), ( 1, 1), 0)
-        cnt += find(input, 'MAS', vadd(pos, ( 1,-1)), (-1, 1), 0)
-        cnt += find(input, 'MAS', vadd(pos, (-1, 1)), ( 1,-1), 0)
-        cnt += find(input, 'MAS', vadd(pos, ( 1, 1)), (-1,-1), 0)
+        for dir in diagonals:
+            cnt += find(input, 'MAS', vadd(pos, dir), vneg(dir), 0)
 
         if cnt == 2:
             ans += 1

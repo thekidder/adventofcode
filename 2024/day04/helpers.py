@@ -32,3 +32,7 @@ def all_directions():
 
 def vadd(a, b):
     return tuple(map(operator.add, a, b))
+
+
+def vneg(a):
+    return tuple(map(operator.neg, a))
