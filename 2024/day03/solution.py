@@ -1,6 +1,5 @@
 import re
 
-
 pattern = re.compile('mul\((\d+),(\d+)\)')
 pattern2 = re.compile('(?:mul\((\d+),(\d+)\))|(?:do\(\))|(?:don\'t\(\))')
 
