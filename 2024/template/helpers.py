@@ -61,6 +61,27 @@ def mhn_dist(a, b):
     return sum(map(abs, vsub(a, b)))
 
 
+def vneg(a):
+    return tuple(map(operator.neg, a))
+
+
+# various useful representations for directions
+cardinals = [
+    (-1, 0),
+    ( 1, 0),
+    ( 0,-1),
+    ( 0, 1),
+]
+
+diagonals = [
+    (-1,-1),
+    ( 1,-1),
+    (-1, 1),
+    ( 1, 1),
+]
+
+all_directions = cardinals + diagonals
+
 dirs = {
     'W': (-1, 0),
     'E': (1, 0),
@@ -68,10 +89,8 @@ dirs = {
     'N': (0, -1),
 }
 
-
 turns = ['W', 'N', 'E', 'S']
 turn_lookup = dict(map(reversed, enumerate(turns)))
-
 
 def turn_left(dir):
     return turns[(turn_lookup[dir] - 1) % 4]
