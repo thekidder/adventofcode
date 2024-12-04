@@ -14,11 +14,10 @@ def find(input, word, pos, direction, index):
 def part1(filename):
     input,_,_ = parse_grid(filename)
     ans = 0
-    for pos, c in input.items():
-        if c == 'X':
-            for dir in all_directions():
-                if find(input, 'XMAS', pos, dir, 0):
-                    ans += 1
+    for pos in input.keys():
+        for dir in all_directions():
+            if find(input, 'XMAS', pos, dir, 0):
+                ans += 1
 
     print(f'P1 {filename}: {ans}')
 
@@ -26,13 +25,12 @@ def part1(filename):
 def part2(filename):
     input,_,_ = parse_grid(filename)
     ans = 0
-    for pos, c in input.items():
+    for pos in input.keys():
         cnt = 0
-        if c == 'A':
-            cnt += find(input, 'MAS', vadd(pos, (-1,-1)), ( 1, 1), 0)
-            cnt += find(input, 'MAS', vadd(pos, ( 1,-1)), (-1, 1), 0)
-            cnt += find(input, 'MAS', vadd(pos, (-1, 1)), ( 1,-1), 0)
-            cnt += find(input, 'MAS', vadd(pos, ( 1, 1)), (-1,-1), 0)
+        cnt += find(input, 'MAS', vadd(pos, (-1,-1)), ( 1, 1), 0)
+        cnt += find(input, 'MAS', vadd(pos, ( 1,-1)), (-1, 1), 0)
+        cnt += find(input, 'MAS', vadd(pos, (-1, 1)), ( 1,-1), 0)
+        cnt += find(input, 'MAS', vadd(pos, ( 1, 1)), (-1,-1), 0)
 
         if cnt == 2:
             ans += 1
