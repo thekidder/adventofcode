@@ -62,16 +62,14 @@ def part2(filename):
     ans = 0
     for update in updates:
         if not ordered(update, rules):
-            print(update)
             updated = order(update, rules)
-            print(updated)
             ans += updated[len(update) // 2]
 
     print(f'P2 {filename}: {ans}')
 
 
-# part1('example.txt')
-# part1('input.txt')
+part1('example.txt')
+part1('input.txt')
 
 part2('example.txt')
 part2('input.txt')
