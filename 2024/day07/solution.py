@@ -1,17 +1,4 @@
-from collections import defaultdict, Counter
-
-import functools
-import itertools
-import math
-import re
-import sys
-
-from helpers import *
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
+import operator
 
 def parse_file(filename):
     lines = []
@@ -24,9 +11,10 @@ def parse_file(filename):
     return lines
 
 
+def concat(a, b):
+    return int(str(a) + str(b))
 
-
-def computes(res, args):
+def computes(test, args, fns):
     partials = set([args[0]])
     args = args[1:]
     while len(args) > 0:
@@ -34,37 +22,37 @@ def computes(res, args):
         args = args[1:]
         next_partials = set()
         for p in partials:
-            if p * n <= res:
-                next_partials.add(p*n)
-            ored = int(str(p) + str(n))
-            if ored <= res:
-                next_partials.add(ored)
-            next_partials.add(p+n)
+            for fn in fns:
+                res = fn(p, n)
+                if res <= test:
+                    next_partials.add(res)
         partials = next_partials
     
-    return res in partials
+    return test in partials
 
 
-def part1(filename):
+def solve(filename, fns):
     input = parse_file(filename)
     ans = 0
 
     for res, args in input:
-        # print(res, args)
-        if computes(res, args):
+        if computes(res, args, fns):
             ans += res
+    return ans
 
+
+def part1(filename):
+    ans = solve(filename, [operator.add, operator.mul])
     print(f'P1 {filename}: {ans}')
 
 
 def part2(filename):
-    input = parse_file(filename)
-    ans = 0
+    ans = solve(filename, [operator.add, operator.mul, concat])
     print(f'P2 {filename}: {ans}')
 
 
 part1('example.txt')
 part1('input.txt')
 
-# part2('example.txt')
-# part2('input.txt')
+part2('example.txt')
+part2('input.txt')
