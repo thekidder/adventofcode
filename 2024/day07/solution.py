@@ -14,6 +14,7 @@ def parse_file(filename):
 def concat(a, b):
     return int(str(a) + str(b))
 
+
 def computes(test, args, fns):
     partials = set([args[0]])
     args = args[1:]
