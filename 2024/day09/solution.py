@@ -1,18 +1,3 @@
-from collections import defaultdict, Counter
-
-import functools
-import itertools
-import math
-import re
-import sys
-
-from helpers import *
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
-
 def parse_file(filename):
     r = []
     id = 0
@@ -53,23 +38,19 @@ def last(li):
 
 def part1(filename):
     input = parse_file(filename)
-    # print(input)
 
     while True:
         try:
             gap = input.index(None)
             m = last(input)
-
             if gap >= m:
                 break
-
- 
             input[gap] = input[m]
             input[m] = None
         except:
             break
 
-    ans = 0#unctools.reduce(lambda acc, x: acc + x[0]*x[1], enumerate(input))
+    ans = 0
     for i,x in enumerate(input):
         if x is not None:
             ans += i*x
@@ -77,40 +58,21 @@ def part1(filename):
     print(f'P1 {filename}: {ans}')
 
 
-def position_of(input, id):
-    for i in range(len(input)-1, 0, -1):
-        if input[i][1] == id:
-            return i
-    print('ERR')
-    return None
-
 def part2(filename):
     input = parse_file2(filename)
-    # print(input)
-    # sys.exit(0)
-    # positions = {}
-    # for i, x in enumerate(input):
-    #     positions[x[1]] = i
-    # positions = dict(map(lambda x: (x[1], x[0]), input))
     id = input[-1][1]
 
-    while id > 0:
-        ind = position_of(input, id)
-        # print(input,id,ind)
+    for id in reversed(range(id+1)):
+        ind = next((i for i,x in enumerate(input) if x[1] == id), None)
         pos,id,ln = input[ind]
 
         for i in range(ind):
-            gap_size = input[i+1][0]  - (input[i][0] + input[i][2])
+            gap_start = input[i][0] + input[i][2]
+            gap_size = input[i+1][0] - gap_start
             if gap_size >= ln:
-                # print(f'found gap of {gap_size} at {i} for {id}')
                 del input[ind]
-                input.insert(i+1, (input[i][0] + input[i][2], id, ln))
+                input.insert(i+1, (gap_start, id, ln))
                 break
-
-        id -= 1
-
-
-    # print(input)
 
     ans = 0
     for pos,id,ln in input:
@@ -120,9 +82,8 @@ def part2(filename):
     print(f'P2 {filename}: {ans}')
 
 
-# part1('example.txt')
-# part1('input.txt')
+part1('example.txt')
+part1('input.txt')
 
 part2('example.txt')
-# not 6304576712958
 part2('input.txt') 
