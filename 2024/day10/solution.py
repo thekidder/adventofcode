@@ -1,79 +1,34 @@
-from collections import defaultdict, Counter
-
 import functools
-import itertools
-import math
-import re
-import sys
 
 from helpers import *
 
-
 def score(m, pos):
-    open = set([pos])
-    closed = set()
+    if m[pos] != 0:
+        return (0,0)
+    open_list = [pos]
+    num_paths = 0
     ends = set()
-    while len(open):
-        p = open.pop()
-        val = m[p]
+    while len(open_list):
+        p = open_list.pop()
         if m[p] == 9:
+            num_paths += 1
             ends.add(p)
-        closed.add(p)
-        for dir in cardinals:
-            n = vadd(p, dir)
-            if n in m and n not in closed and m[n] == val + 1:
-                open.add(n)
-    return len(ends)
-
-
-def score2(m, pos):
-    trails = [[pos]]
-    completed = 0
-    while len(trails):
-        trail = trails.pop()
-        p = trail[-1]
-        if m[p] == 9:
-            completed += 1
             continue
         val = m[p]
         for dir in cardinals:
             n = vadd(p, dir)
             if n in m and m[n] == val + 1:
-                trails.append(trail + [n])
-    return completed
+                open_list.append(n)
+    return len(ends), num_paths
 
 
-
-def part1(filename):
+def solve(filename):
     input,_,_ = parse_grid(filename)
-    print(input)
 
-    ans = 0
-    for pos,v in input.items():
-        if v == 0:
-            s = score(input, pos)
-            print(f'{pos}: {s}')
-            ans += s
-
-    print(f'P1 {filename}: {ans}')
+    ans = functools.reduce(lambda acc, x: vadd(acc, score(input, x)), input.keys(), (0,0))
+    print(f'P1 {filename}: {ans[0]}')
+    print(f'P2 {filename}: {ans[1]}')
 
 
-def part2(filename):
-    input,_,_ = parse_grid(filename)
-    print(input)
-
-    ans = 0
-    for pos,v in input.items():
-        if v == 0:
-            s = score2(input, pos)
-            print(f'{pos}: {s}')
-            ans += s
-
-    print(f'P2 {filename}: {ans}')
-
-
-part1('example.txt')
-part1('input.txt')
-
-part2('example.txt')
-part2('input.txt')
+solve('example.txt')
+solve('input.txt')
