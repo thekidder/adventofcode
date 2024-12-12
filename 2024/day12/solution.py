@@ -1,10 +1,4 @@
-from collections import defaultdict, Counter
-
 import functools
-import itertools
-import math
-import re
-import sys
 
 from helpers import *
 
@@ -24,6 +18,18 @@ def flood_fill(m, pos):
     return area
 
 
+def get_garden_and_plots(filename):
+    input,_,_ = parse_grid(filename)
+    plots = []
+
+    for pos in input.keys():
+        if any(filter(lambda x: pos in x, plots)):
+            continue
+        plots.append(flood_fill(input, pos))
+
+    return input, plots
+
+
 def perimeter(m, plot):
     t = m[next(iter(plot))]
     perimeter = set()
@@ -37,71 +43,44 @@ def perimeter(m, plot):
 
 
 def part1(filename):
-    input,_,_ = parse_grid(filename)
-    ans = 0
-
-    plots = []
-
-    for pos in input.keys():
-        if any(filter(lambda x: pos in x, plots)):
-            continue
-        plots.append(flood_fill(input, pos))
-
-    for p in plots:
-        t = input[next(iter(p))]
-        # print(f'{t}: area {len(p)}, perimeter {perimeter(input, p)}')
-        ans += len(p) * len(perimeter(input, p))
-
+    input,plots = get_garden_and_plots(filename)
+    
+    ans = functools.reduce(lambda acc, p: acc + len(p) * len(perimeter(input, p)), plots, 0)
     print(f'P1 {filename}: {ans}')
 
 
-def adjacent(a, o):
-    for b in o:
-        if mhn_dist(a[0], b[0]) == 1 and a[1] == b[1]:
-            return True
+def adjacent(a, b):
+    if mhn_dist(a[0], b[0]) == 1 and a[1] == b[1]:
+        return True
     return False
 
-def sides(m, plot):
-    t = m[next(iter(plot))]
-    perim = sorted(perimeter(m, plot))
 
+def sides(m, plot):
+    perim = sorted(perimeter(m, plot))
     sides = []
 
     for a in perim:
         if any(filter(lambda x: a in x, sides)):
             continue
-        side = set([a])
+        side = [a]
         for b in perim:
-            if a == b or any(filter(lambda x: b in x, sides)):
+            if a == b:
                 continue
-            if adjacent(b, side):
-                side.add(b)
-        sides.append(side)
-
-    # print(sides)
+            if adjacent(b, side[-1]):
+                side.append(b)
+        sides.append(set(side))
     return len(sides)
 
 
 def part2(filename):
-    input,_,_ = parse_grid(filename)
-    ans = 0
+    input,plots = get_garden_and_plots(filename)
 
-    plots = []
-
-    for pos in input.keys():
-        if any(filter(lambda x: pos in x, plots)):
-            continue
-        plots.append(flood_fill(input, pos))
-
-    for p in plots:
-        t = input[next(iter(p))]
-        # print(f'{t}: area {len(p)}, sides {sides(input, p)}')
-        ans += len(p) * sides(input, p)
+    ans = functools.reduce(lambda acc, p: acc + len(p) * sides(input, p), plots, 0)
     print(f'P2 {filename}: {ans}')
 
 
-# part1('example.txt')
-# part1('input.txt')
+part1('example.txt')
+part1('input.txt')
 
 part2('example.txt')
 part2('input.txt')
