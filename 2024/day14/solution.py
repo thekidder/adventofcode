@@ -81,14 +81,14 @@ def part1(filename, w, h):
             input[i] = sim(input[i], w, h)
         # if (iter - 37) % 101 == 0:
         # if iter > 6000:
-        # print(iter)
+        # print(iter+1)
         # print_robots(input, w, h)
             # print(nrobots(input, w / 4, h / 4, 3 * w / 4, 3 * h / 4))
         n = nrobots(input, w / 4, h / 4, 3 * w / 4, 3 * h / 4)
             # m = max_overlap(input)
-        if n > 225:
+        if n > 300:
         # if area(input) < 9800:
-            print('DENSITY', iter, n)
+            print('DENSITY', iter+1, n)
             print_robots(input, w, h)
             # if m > 4:
             #     print('OVERLAP', iter, m)
@@ -117,14 +117,5 @@ def part1(filename, w, h):
     print(f'P1 {filename}: {ans}')
 
 
-def part2(filename):
-    input = parse_file(filename)
-    ans = 0
-    print(f'P2 {filename}: {ans}')
-
-
-# part1('example.txt', 11, 7)
+part1('example.txt', 11, 7)
 part1('input.txt', 101, 103)
-
-# part2('example.txt')
-# part2('input.txt')
