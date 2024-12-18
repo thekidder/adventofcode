@@ -1,8 +1,20 @@
 import math
+import re
 
-def readfile(filename):
+num = re.compile('(\d+)')
+
+def parse_file(filename):
     with open(filename, 'r') as f:
-        return f.read()
+        registers,prog =  f.read().split('\n\n')
+        registers = registers.splitlines()
+        a = int(num.search(registers[0]).group(1))
+        b = int(num.search(registers[1]).group(1))
+        c = int(num.search(registers[2]).group(1))
+
+        _, prog = prog.split(':')
+        prog = list(map(int, prog.split(',')))
+        
+        return a, b, c, prog
 
 
 def combo(a,b,c,arg):
@@ -17,8 +29,8 @@ def combo(a,b,c,arg):
     print(f'ERR received combo operand 7')
 
 
-def part1(a, b, c, prog, debug=False):
-    prog = list(map(int, prog.split(',')))
+def part1(filename, debug=False):
+    a, b, c, prog = parse_file(filename)
     ans = []
     ip = 0
     while True:
@@ -52,11 +64,11 @@ def part1(a, b, c, prog, debug=False):
             print(f'ERR unknown opcode {op}')
         ip += 2
 
-    return ans
+    print(f'P1 {filename}: {",".join(map(str, ans))}')
 
 
-def part2(b,c,prog):
-    prog = list(map(int, prog.split(',')))
+def part2(filename):
+    _, b, c, prog = parse_file(filename)
     target = list(reversed(prog))
     options = set([0])
     for x in target:
@@ -77,9 +89,11 @@ def part2(b,c,prog):
         if len(next) == 0:
             print(f'failed at {x}')
             return False
-        print(f'got {len(next)} possibilities for {x}: {next}')
         options = next
-    print(min(map(lambda x: x // 8, options)))
+    print(f'P2 {filename}: {min(map(lambda x: x // 8, options))}')
 
 
-part2(0,0,readfile('input.txt'))
+part1('example.txt')
+part1('input.txt')
+
+part2('input.txt')
