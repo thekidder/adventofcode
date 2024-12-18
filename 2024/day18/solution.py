@@ -1,18 +1,9 @@
-from collections import defaultdict, Counter
+from collections import defaultdict
 
-import functools
-import itertools
 import heapq
 import math
-import re
-import sys
 
 from helpers import *
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
 
 def find(blocked, size):
     open = []
@@ -57,19 +48,26 @@ def part1(filename, size, bytes):
 def part2(filename, size):
     input = parse_file(filename)
     ans = None
-    for i in range(len(input)):
-        print(i)
+    bottom = 0
+    i = len(input) // 2
+    top = len(input)
+    while True:
         cost = find(set(input[:i]), size)
         if cost == math.inf:
-            ans = input[i-1]
+            top = i
+        else:
+            bottom = i
+        i = (top - bottom) // 2 + bottom
+        if top - bottom == 1:
+            ans = input[bottom]
             break
 
-    print(f'P2 {filename}: {ans}, {i}')
+
+    print(f'P2 {filename}: {ans[0]},{ans[1]}')
 
 
-# part1('example.txt', 6, 12)
-# part1('input.txt', 70, 1024)
+part1('example.txt', 6, 12)
+part1('input.txt', 70, 1024)
 
-# part2('example.txt', 6)
-# not 43, 12
+part2('example.txt', 6)
 part2('input.txt', 70)
