@@ -32,12 +32,18 @@ def part1(filename):
     input = parse_file(filename)
     print(input)
     ans = 0
+
+
+
     print(f'P1 {filename}: {ans}')
 
 
 def part2(filename):
     input = parse_file(filename)
     ans = 0
+
+
+
     print(f'P2 {filename}: {ans}')
 
 

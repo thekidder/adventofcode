@@ -1,32 +1,4 @@
-from collections import defaultdict
-
-import heapq
-import math
-
 from helpers import *
-
-def find(blocked, size):
-    open = []
-    start = (0, 0)
-    end = (size, size)
-    heapq.heappush(open, (0, start, 0))
-
-    scores = defaultdict(lambda: math.inf)
-    best_cost = math.inf
-
-    while len(open):
-        _, pos, cost = heapq.heappop(open)
-        if pos == end and cost < best_cost:
-            best_cost = cost
-            break
-        for dir in cardinals:
-            n = vadd(pos, dir)
-            if all(map(lambda x: x >= 0 and x <= size, n)) and n not in blocked:
-                new_cost = cost + 1
-                if new_cost < scores[n]:
-                    scores[n] = new_cost
-                    heapq.heappush(open, (mhn_dist(n, end)+new_cost, n, new_cost))
-    return best_cost
 
 
 def parse_file(filename):
@@ -39,9 +11,23 @@ def parse_file(filename):
     return lines
 
 
+def est_fn(_, start, end):
+    return mhn_dist(start, end)
+
+
+def generate_fn(context, cost, loc):
+    blocked, size = context
+    for dir in cardinals:
+        n = vadd(loc, dir)
+        if all(map(lambda x: x >= 0 and x <= size, n)) and n not in blocked:
+            yield (cost + 1, n)
+
+
+
 def part1(filename, size, bytes):
     input = parse_file(filename)
-    ans = find(set(input[:bytes]), size)
+    context = (set(input[:bytes]), size)
+    ans,_ = a_star(context, (0,0), (size, size), generate_fn, est_fn)
     print(f'P1 {filename}: {ans}')
 
 
@@ -52,8 +38,9 @@ def part2(filename, size):
     i = len(input) // 2
     top = len(input)
     while True:
-        cost = find(set(input[:i]), size)
-        if cost == math.inf:
+        context = (set(input[:i]), size)
+        cost,_ = a_star(context, (0,0), (size, size), generate_fn, est_fn)
+        if cost == None:
             top = i
         else:
             bottom = i
@@ -61,7 +48,6 @@ def part2(filename, size):
         if top - bottom == 1:
             ans = input[bottom]
             break
-
 
     print(f'P2 {filename}: {ans[0]},{ans[1]}')
 
