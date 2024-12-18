@@ -118,6 +118,17 @@ def construct_path(came_from, start_loc, end_loc):
     return path
 
 
+def est_grid_fn(_, start, end):
+    return mhn_dist(start, end)
+
+
+def generate_grid_fn(grid, cost, loc):
+    for dir in cardinals:
+        n = vadd(loc, dir)
+        if loc in grid and loc == '.':
+            yield (cost + 1, n)
+
+
 def a_star(
     context, # context includes all info necessary to build a path; the map or graph
     start_loc, # starting location
