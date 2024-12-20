@@ -153,6 +153,7 @@ def a_star(
 
     while len(open):
         _, cost, loc  = heapq.heappop(open)
+        # print(cost, loc)
         if loc == end_loc:
             return cost, construct_path(came_from, start_loc, end_loc)
         for next_cost, next_loc in generate_fn(context, cost, loc):
