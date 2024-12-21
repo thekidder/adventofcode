@@ -129,6 +129,7 @@ def generate_grid_fn(grid, cost, loc):
         if n in grid and grid[n] == '.':
             yield (cost + 1, n)
 
+import sys
 
 def construct_all_paths(came_from, start_loc, end_loc):
     paths = []

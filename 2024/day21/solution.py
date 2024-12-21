@@ -4,15 +4,9 @@ import functools
 import itertools
 import math
 import random
-import re
 import sys
 
 from helpers import *
-
-# regex example
-# pattern = re.compile('(\d+),(\d+) -> (\d+),(\d+)')
-# m = line_pattern.match(line)
-# x = int(m.group(1)) # 0 is the entire capture group
 
 def parse_file(filename):
     r = []
@@ -33,11 +27,19 @@ def generate_robot_fn(grid, cost, loc):
             yield (cost + 1, n)
 
 
+# costs = {
+#     '<': 60773707514,
+#     '>':  42672313154,
+#     '^':  43706025078,
+#     'v':  53421889593,
+#     'A':  1,
+# }
+
 dirs = {
     (-1,  0): '<',
-    ( 1,  0): '>',
     ( 0,  1): 'v',
     ( 0, -1): '^',
+    ( 1,  0): '>',
 }
 
 
@@ -49,20 +51,6 @@ def path_to_dirs(path):
             dir = vsub(b, a)
             yield dirs[dir]
     yield 'A'
-
-
-# def filter_seq(seq):
-#     dirs_since_a = set()
-#     for i, c in enumerate(seq):
-#         if c == 'A':
-#             dirs_since_a = set()
-#         else:
-#             if i > 0 and c in dirs_since_a and seq[i-1] != c:
-#                 # print('NO ', seq)
-#                 return False
-#             dirs_since_a.add(c)
-#     # print('YES', seq)
-#     return True
 
 
 def filter_seqs(next_seqs, min_len):
@@ -88,7 +76,7 @@ def seq_len(code):
             l = min(l, len(seq))
         seqs = list(filter_seqs(next_seqs, l))
         seqs = random.sample(seqs, min(10, len(seqs)))
-        print('example seq', seqs[0])
+        # print('example seq', seqs[0])
 
         # print(seqs)
 
@@ -126,7 +114,6 @@ def gen_paths(keypad, start, end):
         r.append(p2)
     return r
     
-
 
 def get_seqs(code, keypad):
     pos_on_keypad = {}
@@ -169,18 +156,137 @@ def part1(filename):
 
     print(f'P1 {filename}: {ans}')
 
+robot_keypad = None
+robot_pos = None
+
+
+costs = {
+    '<': 34239478182,
+    'v':  31694263025,
+    '^':  25192224696,
+    '>':  24175432924,
+    'A':  1,
+}
+
+@functools.cache
+def seq_to_seq(code):
+    global seq_len_cache
+    options = seq_to_seqs(code)
+
+    best = None
+    best_cost = math.inf
+
+    for op in options:
+        cost = functools.reduce(lambda acc, x: acc + costs[x], op, 0)
+        if cost < best_cost:
+            best_cost = cost
+            best = op
+    # print(code, best, best_cost)
+    return best
+
+
+def seq_to_seqs(code):
+    global robot_keypad, robot_pos
+    start_pos = robot_pos['A']
+    code_paths = [[]]
+
+    for button in code:
+        next_code_paths = []
+        for path in code_paths:
+            pos = path[-1] if len(path) else start_pos
+            if pos != robot_pos[button]:
+                # print(pos, pos_on_keypad[button])
+                # c,p = a_star(robot_keypad, pos, robot_pos[button], generate_robot_fn, est_grid_fn)
+                p = gen_paths(robot_keypad, pos, robot_pos[button])
+                for p in p:
+                    next_code_paths.append(path + p)
+            else:
+                next_code_paths.append(path + [pos])
+        code_paths = next_code_paths
+
+    return map(lambda x: ''.join(path_to_dirs(x)), code_paths)
+        
+
+def subseqs(seq):
+    try:
+        i = 0
+        while i < len(seq):
+            j = seq.index('A', i)
+            yield seq[i:j+1]
+            i = j + 1
+    except:
+        pass
+
+
+
+@functools.cache
+def code_to_len(code, n):
+    num_seqs = defaultdict(int)
+    for seq in subseqs(code):
+        num_seqs[seq] += 1
+
+    for _ in range(n):
+        # print(num_seqs)
+        next_num_seqs = defaultdict(int)
+        for seq, cnt in num_seqs.items():
+            for next_seq in subseqs(seq_to_seq(seq)):
+                next_num_seqs[next_seq] += cnt
+        num_seqs = next_num_seqs
+
+    # total_cost = functools.reduce(operator.add, num_seqs.values(), 0)
+    # print(total_cost)
+    # print({ k:v/total_cost for k,v in num_seqs.items()})
+
+    r = 0
+    for seq, cnt in num_seqs.items():
+        r += cnt * len(seq)
+    return r
+
+
+def seq_len2(code):
+    n = 25
+    keypad,kw,kh = parse_grid('keypad.txt')
+
+    options = list(get_seqs(code, keypad))
+    best = math.inf
+    for code in options:
+        best = min(best, code_to_len(code, n))
+    return best
 
 def part2(filename):
     input = parse_file(filename)
     ans = 0
 
+    global robot_keypad, robot_pos
+    robot,rw,rh = parse_grid('robot.txt')
+    robot_keypad = robot
 
+    keypad_to_pos = {}
+    for k,v in robot.items():
+        keypad_to_pos[v] = k
+    robot_pos = keypad_to_pos
+
+    for button in ['<', '>', '^', 'v', 'A']:
+        for path in gen_paths(robot_keypad, robot_pos['A'], robot_pos[button]):
+            code = ''.join(path_to_dirs(path))
+            print(button, path, ' -> ', code_to_len(code, 5))
+
+    for code in input:
+        seq_length = seq_len2(code)
+        complexity = int(code[:-1])
+        print(seq_length, complexity)
+        ans += seq_length * complexity
 
     print(f'P2 {filename}: {ans}')
 
 
-part1('example.txt')
-part1('input.txt')
+# part1('example.txt')
+# part1('input.txt')
 
+# 363680443427792 too high
+# 142399336241600 too low
+# 225887582184500 NO
+# 223951999210460 NO
+# 
 # part2('example.txt')
-# part2('input.txt')
+part2('input.txt')
