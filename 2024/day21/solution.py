@@ -283,10 +283,5 @@ def part2(filename):
 # part1('example.txt')
 # part1('input.txt')
 
-# 363680443427792 too high
-# 142399336241600 too low
-# 225887582184500 NO
-# 223951999210460 NO
-# 
 # part2('example.txt')
 part2('input.txt')
