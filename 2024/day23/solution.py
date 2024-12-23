@@ -6,7 +6,6 @@ def parse_file(filename):
     with open(filename, 'r') as f:
         for line in f:
             lines.append(tuple(map(lambda x: x.strip(), line.split('-'))))
-
     return lines
 
 
@@ -30,11 +29,9 @@ def part1(filename):
     print(f'P1 {filename}: {len(lans)}')
 
 
-def connected(all_connections, pcs):
-    # print(f'connected {pcs}')
-    for a,b in itertools.combinations(pcs, 2):
-        # print(f'{a}, {b}')
-        if b not in all_connections[a]:
+def connected(edges, subgraph):
+    for a,b in itertools.combinations(subgraph, 2):
+        if b not in edges[a]:
             return False
     return True
 
@@ -42,11 +39,11 @@ def connected(all_connections, pcs):
 def part2(filename):
     input = parse_file(filename)
 
-    all_connections = defaultdict(set)
+    edges = defaultdict(set)
     lans = []
     for a, b in input:
-        all_connections[a].add(b)
-        all_connections[b].add(a)
+        edges[a].add(b)
+        edges[b].add(a)
         lans.append(set([a,b]))
 
     for a, b in input:
@@ -54,15 +51,10 @@ def part2(filename):
             combined = set([a,b]) | lan
             if combined == lan:
                 continue
-            if connected(all_connections, combined):
+            if connected(edges, combined):
                 lan.update([a,b])
 
-    m = 0
-    for lan in lans:
-        if len(lan) > m:
-            m = len(lan)
-            ans = lan
-
+    ans = max(lans, key = lambda x: len(x))
     ans = ','.join(sorted(ans))
 
     print(f'P2 {filename}: {ans}')
