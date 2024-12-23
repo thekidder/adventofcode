@@ -60,8 +60,8 @@ def filter_seqs(next_seqs, min_len):
 
 
 def seq_len(code):
-    keypad,kw,kh = parse_grid('keypad.txt')
-    robot,rw,rh = parse_grid('robot.txt')
+    keypad,kw,kh = parse_grid(file('keypad.txt'))
+    robot,rw,rh = parse_grid(file('robot.txt'))
     nrobots = 2
     keypads = [keypad] + [robot] * nrobots
 
@@ -245,7 +245,7 @@ def code_to_len(code, n):
 
 def seq_len2(code):
     n = 25
-    keypad,kw,kh = parse_grid('keypad.txt')
+    keypad,kw,kh = parse_grid(file('keypad.txt'))
 
     options = list(get_seqs(code, keypad))
     best = math.inf
@@ -258,7 +258,7 @@ def part2(filename):
     ans = 0
 
     global robot_keypad, robot_pos
-    robot,rw,rh = parse_grid('robot.txt')
+    robot,rw,rh = parse_grid(file('robot.txt'))
     robot_keypad = robot
 
     keypad_to_pos = {}
@@ -266,10 +266,10 @@ def part2(filename):
         keypad_to_pos[v] = k
     robot_pos = keypad_to_pos
 
-    for button in ['<', '>', '^', 'v', 'A']:
-        for path in gen_paths(robot_keypad, robot_pos['A'], robot_pos[button]):
-            code = ''.join(path_to_dirs(path))
-            print(button, path, ' -> ', code_to_len(code, 5))
+    # for button in ['<', '>', '^', 'v', 'A']:
+    #     for path in gen_paths(robot_keypad, robot_pos['A'], robot_pos[button]):
+    #         code = ''.join(path_to_dirs(path))
+    #         print(button, path, ' -> ', code_to_len(code, 5))
 
     for code in input:
         seq_length = seq_len2(code)

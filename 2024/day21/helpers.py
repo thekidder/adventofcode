@@ -10,18 +10,18 @@ def file(name):
         return f.read()
 
 
-def parse_grid(filename):
+def parse_grid(input):
     r = {}
     mx = 0
     my = 0
-    with open(filename, 'r') as f:
-        for (y, l) in enumerate(f):
-            my = y
-            for (x, c) in enumerate(l.strip()):
-                r[(x,y)] = c
-                mx = x
+    f = input.split('\n')
+    for (y, l) in enumerate(f):
+        my = y
+        for (x, c) in enumerate(l.strip()):
+            r[(x,y)] = c
+            mx = x
 
-        return r,mx,my
+    return r,mx,my
 
 
 def print_grid(m, mx, my):
