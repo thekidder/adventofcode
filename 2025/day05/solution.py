@@ -1,38 +1,33 @@
-def parse_file(filename):
-    r = []
-    with open(filename, 'r') as f:
-        lines = f.read()
-        r = []
-        ranges, ingredients = lines.split('\n\n')
-        for range in ranges.split('\n'):
-            fi, l = range.split('-')
-            r.append((int(fi), int(l)))
-        i = list(map(int, ingredients.split('\n')))
+from functools import reduce
 
-        return r, i
+def mapl(fn, itr):
+    return list(map(fn, itr))
+
+
+def parse_file(filename):
+    with open(filename, 'r') as f:
+        ranges, ingredients = f.read().split('\n\n')
+        return mapl(lambda r: mapl(int, r.split('-')), ranges.split('\n')), \
+            mapl(int, ingredients.split('\n'))
 
 
 def part1(filename):
     ranges, ingredients = parse_file(filename)
-    ans = 0
 
-    for i in ingredients:
+    def in_range(acc, i):
         for r in ranges:
             if i >= r[0] and i <= r[1]:
-                ans += 1
-                break
+                return acc + 1
+        return acc
 
+    ans = reduce(in_range, ingredients, 0)
     print(f'P1 {filename}: {ans}')
 
 
 def part2(filename):
-    ranges, _ = parse_file(filename)
-    ans = 0
-
-    ranges = sorted(ranges, key = lambda r: r[0])
+    ranges = sorted(parse_file(filename)[0], key = lambda r: r[0])
 
     output = []
-
     last = ranges[0]
     for r in ranges[1:]:
         if r[0] <= last[1]:
@@ -44,9 +39,7 @@ def part2(filename):
     if last != ranges[-1]:
         output.append(last)
 
-    for r in output:
-        ans += r[1] - r[0] + 1
-
+    ans = reduce(lambda acc, r: acc + r[1] - r[0] + 1, output, 0)
     print(f'P2 {filename}: {ans}')
 
 

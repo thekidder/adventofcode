@@ -50,6 +50,10 @@ def sign(n):
     return (n > 0) - (n < 0)
 
 
+def mapl(fn, itr):
+    return list(map(fn, itr))
+
+
 def vadd(a, b):
     return tuple(map(operator.add, a, b))
 
