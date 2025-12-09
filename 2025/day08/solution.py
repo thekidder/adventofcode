@@ -1,9 +1,7 @@
 import itertools
-
 from helpers import *
 
 def parse_file(filename):
-    r = []
     with open(filename, 'r') as f:
         return mapl(lambda x: tuple(map(int, x.split(','))), f.read().split('\n'))
 
@@ -14,7 +12,7 @@ def solve(filename, iterations=10):
 
     sorted_pairs = []
     for a, b in itertools.combinations(input, 2):
-        sorted_pairs.append((dist_sqr(a, b), a, b))
+        sorted_pairs.append((sqr_dist(a, b), a, b))
     sorted_pairs.sort()
 
     circuits = {}

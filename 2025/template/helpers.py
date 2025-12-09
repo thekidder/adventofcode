@@ -66,6 +66,10 @@ def vmul(a, b):
     return tuple(map(operator.mul, a, b))
 
 
+def sqr_dist(a, b):
+    return sum(map(lambda x: x ** 2, vsub(a, b)))
+
+
 def mhn_dist(a, b):
     return sum(map(abs, vsub(a, b)))
 
