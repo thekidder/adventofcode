@@ -1,5 +1,5 @@
+from collections import defaultdict
 import itertools
-import random
 from helpers import *
 
 def parse_file(filename):
@@ -20,85 +20,109 @@ def part1(filename):
     print(f'P1 {filename}: {ans}')
 
 
-def get_area(edges, input, a, b):
+def flood_fill(grid, pos):
+    cands = [pos]
+    while len(cands):
+        pos = cands.pop()
+        if grid[pos] != '.':
+            continue
+        for dir in cardinals:
+            cands.append(vadd(dir, pos))
+        grid[pos] = 'X'
+
+
+def get_area(grid, reverse_x, reverse_y, a, b):
     min_x = min(a[0], b[0])
     max_x = max(a[0], b[0])
     min_y = min(a[1], b[1])
     max_y = max(a[1], b[1])
 
-    corners = [
-        (min_x+0.5, min_y+0.5),
-        (max_x-0.5, min_y+0.5),
-        (min_x+0.5, max_y-0.5),
-        (max_x-0.5, max_y-0.5),
-    ]
-
-    # test_points = []
-    # for i in range(1000):
-    #     test_points.append(
-    #         (random.uniform(min_x+0.5, max_x-0.5), random.uniform(min_y+0.5, max_y-0.5))
-    #     )
-
-    test_points = set()
-    for x,y in input:
-        for dir in all_directions:
-            (x, y) = vadd((x, y), (dir[0]*0.5, dir[1]*0.5))
-            if x <= min_x:
-                x = min_x + 0.5
-            elif x >= max_x:
-                x = max_x - 0.5
-            if y <= min_y:
-                y = min_y + 0.5
-            elif y >= max_y:
-                y = max_y - 0.5
-            test_points.add((x,y))
-    for x,y in corners:
-        test_points.add((x,y))
-
-    for ray in test_points:
-        edge_cnt = 0
-        for edge in edges:
-            if ray[0] < edge[0][0] and ray[1] > edge[0][1] and ray[1] < edge[1][1]:
-                edge_cnt += 1
-        if edge_cnt % 2 == 0:
-            return 0
+    for x in range(min_x, max_x+1):
+        for y in range(min_y, max_y+1):
+            if grid[(x,y)] == '.':
+                return 0
+            
+    min_x = reverse_x[min_x]
+    max_x = reverse_x[max_x]
+    min_y = reverse_y[min_y]
+    max_y = reverse_y[max_y]
     return operator.mul(*vsub((max_x+1, max_y+1), (min_x, min_y)))
-
 
 
 def part2(filename):
     input = parse_file(filename)
+    x_coords = set()
+    y_coords = set()
+    for coord in input:
+        x_coords.add(coord[0])
+        y_coords.add(coord[1])
 
-    edges = []
-    for i, coord in enumerate(input):
-        prev = input[i-1]
+    x_coords = sorted(x_coords)
+    y_coords = sorted(y_coords)
+
+    to_x = {}
+    to_y = {}
+    reverse_x = {}
+    reverse_y = {}
+    new_coord = {}
+    sx = len(x_coords)
+    sy = len(y_coords)
+    for j, y in enumerate(y_coords):
+        reverse_y[j] = y
+        to_y[y] = j
+
+    for i, x in enumerate(x_coords):
+        reverse_x[i] = x
+        to_x[x] = i
+
+    for p in input:
+        new_coord[p] = (to_x[p[0]],to_y[p[1]])
+
+    grid = defaultdict(lambda: '.')
+    fill_start = None
+    for i,p in enumerate(input):
+        prev = new_coord[input[i-1]]
+        coord = new_coord[p]
+
         dir = tuple(map(sign, vsub(coord, prev)))
-        if dir[0] == 0:
-            mi = min(prev, coord)
-            ma = max(prev, coord)
-            edges.append((mi, ma))
+        prev = vadd(prev, dir)
+        while prev != coord:
+            grid[prev] = 'X'
+            prev = vadd(prev, dir)
 
-    # print(edges)
+        grid[coord] = '#'
+    
+    for i,p in enumerate(input):
+        prev_prev = new_coord[input[i-2]]
+        prev = new_coord[input[i-1]]
+        coord = new_coord[p]
+        last_dir = tuple(map(sign, vsub(prev, prev_prev)))
+        dir = tuple(map(sign, vsub(coord, prev)))
+        if last_dir == (1, 0) and dir == (0, 1) and grid[fill_start] == '.':
+            fill_start = vadd(prev, (-1, 1))
+
+    flood_fill(grid, fill_start)
+    print_grid(grid, sx, sy)
 
     ans = 0
-    for a, b in itertools.combinations(input, 2):
-        ans = max(get_area(edges, input, a, b), ans)
-        # print(ans)
+    i = 0
+    total = math.comb(len(input), 2)
+    print(f'trying {total} combinations')
+    for a, b in itertools.combinations(new_coord.values(), 2):
+        # if i % 100 == 0:
+        #     print(f'iteration {i}/{total}')
+        area = get_area(grid, reverse_x, reverse_y, a, b)
+        if area > ans:
+            ans = area
+            print(a, b, ans)
+        i += 1
 
     print(f'P2 {filename}: {ans}')
 
 
-# part1('example.txt')
-# part1('input.txt')
+part1('example.txt')
+part1('input.txt')
 
 part2('example.txt')
-part2('input.txt') 
+part2('input.txt')
 
-# 3944382296 too high 
-# 3904033833 no
-# 127710216 no
-# 1649971048 ?
-# 1749142296 ?
-# 1750802724 ?
-# 101621541 ?
-# 1226 too low 
