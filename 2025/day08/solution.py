@@ -8,12 +8,7 @@ def parse_file(filename):
 
 def solve(filename, iterations=10):
     input = parse_file(filename)
-    ans = 0
-
-    sorted_pairs = []
-    for a, b in itertools.combinations(input, 2):
-        sorted_pairs.append((sqr_dist(a, b), a, b))
-    sorted_pairs.sort()
+    sorted_pairs = sorted([(sqr_dist(a, b), a, b) for a, b in itertools.combinations(input, 2)])
 
     circuits = {}
     deduped_circuits = {}
