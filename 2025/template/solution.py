@@ -13,42 +13,27 @@ from helpers import *
 # m = line_pattern.match(line)
 # x = int(m.group(1)) # 0 is the entire capture group
 
-def parse_file(filename):
-    r = []
-    with open(filename, 'r') as f:
-        lines = f.read()
-        sections = lines.split('\n\n')
 
-        return r
-    # lines = []
-    # with open(filename, 'r') as f:
-    #     for line in f:
-    #         lines.append(int(line))
-
-    # return lines
+def parse(input):
+    return input.split('\n')
 
 
-def part1(filename):
-    input = parse_file(filename)
+def part1(data):
+    input = parse(data)
     print(input)
     ans = 0
+    return ans
 
 
-
-    print(f'P1 {filename}: {ans}')
-
-
-def part2(filename):
-    input = parse_file(filename)
+def part2(data):
+    input = parse(data)
+    print(input)
     ans = 0
+    return ans
 
 
+check(part1, 'example.txt', 1)
+exec(part1, 'input.txt')
 
-    print(f'P2 {filename}: {ans}')
-
-
-part1('example.txt')
-# part1('input.txt')
-
-# part2('example.txt')
-# part2('input.txt')
+# check(part2, 'example.txt', 1)
+# exec(part2, 'input.txt')
